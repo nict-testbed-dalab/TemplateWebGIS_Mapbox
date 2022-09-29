@@ -1,0 +1,18 @@
+{
+	"sources": {
+		"rmap": {
+			"type": "raster",
+			"tiles": ["/api/weatherrmap/{z}/{x}/{y}.png"]
+		}
+	},
+	"layers": [
+		{
+			"id": "rmap1",
+			"name" : "水位",
+			"type": "raster",
+			"source": "rmap",
+			"minzoom": 1,
+			"maxzoom": 10			
+		}
+	]
+}

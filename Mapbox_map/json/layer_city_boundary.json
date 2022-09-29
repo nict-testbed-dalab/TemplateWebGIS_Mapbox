@@ -1,0 +1,24 @@
+{
+	"sources": {
+		"layer_city_boundary": {
+			"type": "vector",
+			"tiles": ["https://tb-gis-web.jgn-x.jp/api/jp_city/{yyyymmdd}/{z}/{x}/{y}.pbf"]
+		}	
+	},
+	"layers": [
+		{
+			"id": "L5",
+			"name" : "市区町村境界",
+			"source": "layer_city_boundary",
+			"source-layer": "city",
+			"type": "line",
+                        "paint": {
+                           "line-color": "#000000",
+                           "line-width": 1,
+                           "line-opacity": 1.0
+	                },
+			"minzoom": 5,
+			"maxzoom": 20
+		}
+	]
+}

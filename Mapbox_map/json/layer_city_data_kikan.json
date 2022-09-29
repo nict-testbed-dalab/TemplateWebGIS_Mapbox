@@ -1,0 +1,28 @@
+{
+	"version": 8,
+	"glyphs": "https://maps.gsi.go.jp/xyz/noto-jp/{fontstack}/{range}.pbf",
+	"sources": {
+		"1_a_5_1_kikan": {
+			"type": "vector",
+			"tiles": ["https://tb-gis-web-dev.jgn-x.jp/storage/data/vectortile/1_a_5_1_kikan/pbf/{z}/{x}/{y}.pbf"]
+		}	
+	},
+	"layers": [
+		{
+			"id": "L8",
+			"name" : "国・都道府県の機関",
+			"source": "1_a_5_1_kikan",
+			"source-layer": "kuninokikan",
+            "type": "circle",
+            "paint": {
+                "circle-color": "#00FFFF",
+                "circle-radius": {
+                    "stops":[[7,10],[10,5]]
+                },
+                "circle-opacity": 1.0
+            },
+			"minzoom": 1,
+			"maxzoom": 20
+		}
+    ]
+}

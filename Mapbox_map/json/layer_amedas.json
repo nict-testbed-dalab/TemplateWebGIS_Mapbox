@@ -1,0 +1,33 @@
+{
+        "sources": {
+                "layer_amedas": {
+                        "type": "geojson",
+                        "data": ""
+                }
+        },
+        "layers": [
+                {
+                        "id": "L1",
+                        "type": "fill-extrusion",
+                        "source": "layer_amedas",
+                        "paint": {
+                            "fill-extrusion-color":
+                             ["step",
+                                   ["get", "height"],
+                                   "#aaaaaa",2,
+				   "#c4c4c4",100,
+                                   "#0404fc",500,
+                                   "#04fcfc",1000,
+                                   "#04fc04",2000,
+                                   "#fcfc04",3000,
+                                   "#fa95f2",5000,
+                                   "#f60807",8000,
+                                   "#f60807"
+                            ],
+                            "fill-extrusion-height": ["get", "height"]
+                        },
+                        "minzoom": 1,
+                        "maxzoom": 18
+                }
+        ]
+}

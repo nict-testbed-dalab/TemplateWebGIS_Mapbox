@@ -1,0 +1,18 @@
+{
+	"sources": {
+		"layer_dem": {
+			"type": "raster",
+			"tiles": ["/api/geoserver/gwc/service/{z}/{x}/{y}"]
+		}
+	},
+	"layers": [
+		{
+			"id": "L10",
+			"name" : "DEM",
+			"type": "raster",
+			"source": "layer_dem",
+			"minzoom": 1,
+			"maxzoom": 15			
+		}
+	]
+}

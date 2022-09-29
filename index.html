@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Mapbox Template</title>
+    <!--script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script-->
+    <script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+    <!-- JQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+
+    <script type="text/javascript" src="./timeline/1.8.0/jquery-k2go-timeline.js"></script>
+    <script type="text/javascript" src="js/lib/picker.js?date=20220216_1"></script>
+    <script type="text/javascript" src="js/lib/picker.date.js?date=20220216_1"></script>
+    <script type="text/javascript" src="js/lib/picker.date.lang.js"></script>
+
+    <script type="text/javascript" src="js/env.js?date=20220224_1"></script>
+    <script type="text/javascript" src="js/fnc.js?date=20220224_1"></script>
+    <script type="text/javascript" src="js/main.js?date=20220224_3"></script>
+    <script type="text/javascript" src="js/STARScontroller.js"></script>
+
+    <link type="text/css" href="./timeline/1.8.0/jquery-k2go-timeline.css" rel="stylesheet" />
+    <link type="text/css" href="css/index.css" rel="stylesheet" />
+    <link type="text/css" href="css/iframe.css" rel="stylesheet" />
+    <link type="text/css" href="css/style.css?date=20220215_1" rel="stylesheet" />
+    <link type="text/css" href="css/play_box.css?date=20220209_6" rel="stylesheet" />
+    <link type="text/css" href="css/default.css?date=20220214_9" rel="stylesheet" />
+    <link type="text/css" href="css/default.date.css?date=20220216_2" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+
+  </head>
+
+  <body>
+    <header>
+      <div class="nav-container">
+        <nav class="navbar navbar-expand-md navbar-light bg-light">
+          <div class="container">
+            <!-- <div class="navbar-brand logo"></div> -->
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarNav"
+              aria-controls="navbarNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                  <a href="/" class="nav-link route-link">Home</a>
+                </li>
+              </ul>
+              <ul class="navbar-nav d-none d-md-block">
+                <!-- Login button: show if NOT authenticated -->
+                <li class="nav-item auth-invisible">
+                  <button
+                    id="qsLoginBtn"
+                    onclick="login()"
+                    class="btn btn-primary btn-margin auth-invisible hidden"
+                  >
+                    ログイン
+                  </button>
+                </li>
+                <!-- / Login button -->
+
+                <!-- Fullsize dropdown: show if authenticated -->
+                <li class="nav-item dropdown auth-visible hidden">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    id="profileDropDown"
+                    data-toggle="dropdown"
+                  >
+                    <!-- Profile image should be set to the profile picture from the id token -->
+                    <img
+                      alt="Profile picture"
+                      class="nav-user-profile profile-image rounded-circle"
+                      width="35"
+                    />
+                  </a>
+                  <div class="dropdown-menu">
+                    <!-- Show the user's full name from the id token here -->
+                    <div class="dropdown-header nav-user-name user-name"></div>
+                    <!-- <a
+                      href="/profile"
+                      class="dropdown-item dropdown-profile route-link"
+                    >
+                      <i class="fas fa-user mr-3"></i> Profile
+                    </a> -->
+                    <a
+                      href="#"
+                      class="dropdown-item"
+                      id="qsLogoutBtn"
+                      onclick="logout()"
+                    >
+                      <i class="fas fa-power-off mr-3"></i> ログアウト
+                    </a>
+                  </div>
+                </li>
+                <!-- /Fullsize dropdown -->
+              </ul>
+
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div id="main">
+      <div id="content">
+        <iframe src="./Mapbox_map/index.html?date=20220314_4" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="map"></iframe>
+      </div>
+    </div>
+    
+    <div id="main-content" class="container mt-5 flex-grow-1">
+      <div id="content-home" class="page">
+      </div>
+    </div>
+    
+    <div id="head_top_bar">
+      <div class="left">
+        <span>Timeline</span>
+      </div>
+      <div class="center">
+        <div id="info"></div>
+        <input type="date" style="display:none;"/>
+        <input type="time" step="1" style="display:none;"/>
+        <span id="date_box">
+          <span id="cal" class="picker__input" aria-haspopup="true" aria-expanded="false" aria-readonly="false" aria-owns="cal_root"></span>
+          <span id="date">0000-00-00 00:00:00</span>
+          <span id="current_time" class="timeCurrent"></span>
+        </span>
+      </div>
+      <div class="right">
+       
+      </div>
+
+      <div id="panel-conf" class="ui-draggable ui-draggable-handle active">
+    
+        <div id="panel-conf-header">
+          <span>再生設定</span>
+          <span id="panel-conf-close"></span>
+        </div>
+    
+        <div id="panel-conf-body">
+    
+          <div id="play-mode-col">
+            <div class="form-title" id="form-title-mode">
+              再生モード
+            </div>
+            <div id="play-mode-selector">
+              <div id="play-mode-normal">
+                通常再生
+              </div>
+              <div id="play-mode-span" class="active">
+                コマ送り再生
+              </div>
+            </div>
+          </div>
+    
+          <div id="play-range-col">
+            <div id="form-title-play-speed">
+    
+              <div id="form-title-play-speed-title">再生間隔</div>
+    
+              <div class="input-area" id="play-speed-wrapper">
+                <input type="range" id="play-speed" min="1" max="10" value="1" step="1">
+              </div>
+              <div class="value-display" id="display1">1sec</div>
+  
+              <div class="input-area" id="play-speed-wrapper2" style="display: none" disabled="">
+                <input type="range" id="play-speed2" min="1" max="11" value="4" step="1">
+              </div>
+              <div class="value-display" id="display2" style="display: none;">x1 (1min/sec)</div>
+  
+            </div>
+          </div>
+    
+          <div id="form-title-play-span">
+            <div id="form-title-play-span-title">
+              コマ送り間隔
+            </div>
+            <div class="input-area">
+              <input type="range" id="play-span" min="1" max="10" value="1" step="1">
+            </div>
+            <div class="value-display" id="display3"><span id="frame">1f</span> / <span id="time">1min</span></div>
+          </div>
+    
+        </div>
+
+    </div>
+
+    <footer>
+      <div id="function_bar">
+        <div class="left">
+          <a id="button_view_url">View URL</a>
+          <p></p>
+          <a id="button_single_capture">画面キャプチャ</a>
+          <a id="button_multi_capture">連続画面キャプチャ</a>          
+        </div>
+        <div class="center">
+          <div id="play_box">
+            <a id="button_loop"></a>
+            <div id="play_ctl">
+              <a id="button_back_edge"></a>
+              <a id="button_back"></a>
+              <a id="button_play_reverse"><span></span></a>
+              <a id="button_stop"></a>
+              <a id="button_play"><span></span></a>
+              <a id="button_fwd"></a>
+              <a id="button_fwd_edge"></a>
+              <a id="button_conf"></a>
+            </div>
+            <div id="blank"></div>
+          </div>
+        </div>
+        <div class="right">
+          <div id="slider_label">1 day</div>
+          <div id="slider">
+            <a id="button_minus"></a>
+            <input id="zoom-range" type="range" class="input-range" min="0" step="1" />
+            <a id="button_plus"></a>
+          </div>
+        </div>
+      </div>
+
+      <div id="button_range"><span>RangeBar</span></div>
+      <div id="timeline"></div>
+    </footer>
+    
+    <div id="view_url">
+      <div id="view_url_box">
+        <div class="view_url_box_header">
+          <div class="view_url_box_title">ViewURL</div>
+          <div class="view_url_box_close"></div>
+        </div>
+        <div class="view_url_box_body">
+          <div class="input_group">
+            <input type="text" value="" aria-label="" readonly="" id="view_url_input">
+            <div class="input_group_button"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="lockWindow"></div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
+    <script src="js/ui.js?date=20220301_1"></script> 
+    <script src="js/app.js?date=20220301_1"></script>
+
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+	"sources": {
+		"vector-3": {
+			"type": "vector",
+			"tiles": ["https://geoshape.ex.nii.ac.jp/vector-adm/tile/city/{z}/{x}/{y}.pbf"],
+			"attribution" : "<a href='https://geoshape.ex.nii.ac.jp/vector-adm/'>2015年国勢調査小地域</a>"
+		}	
+	},
+	"layers": [
+		{
+			"id": "L3",
+			"name" : "市区町村境界",
+			"source": "vector-3",
+			"source-layer": "city",
+			"type": "line",
+			"paint": {
+				"line-color": "dimgray"
+			},
+			"minzoom": 5,
+			"maxzoom": 13
+		}
+	]
+}

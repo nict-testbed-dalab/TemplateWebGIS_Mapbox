@@ -1,0 +1,18 @@
+{
+	"sources": {
+		"amjp_veda02_sshfs_tsfc": {
+			"type": "raster",
+			"tiles": ["/api/weather_amjp_veda02_sshfs/tsfc/{yyyy}/{mm}/{dd}/{hh}/{mi}/{z}/{x}/{y}.png"]
+		}
+	},
+	"layers": [
+		{
+			"id": "amjp_veda02_sshfs_tsfc",
+			"name" : "地表面気温",
+			"type": "raster",
+			"source": "amjp_veda02_sshfs_tsfc",
+			"minzoom": 1,
+			"maxzoom": 10			
+		}
+	]
+}

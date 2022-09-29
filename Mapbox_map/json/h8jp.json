@@ -1,0 +1,18 @@
+{
+	"sources": {
+		"h8jp": {
+			"type": "raster",
+			"tiles": ["/api/weather/h8jp/{yyyy}/{mm}/{dd}/{hh}/{mi}/{z}/{x}/{y}.png"]
+		}
+	},
+	"layers": [
+		{
+			"id": "h8jp1",
+			"name" : "ひまわり",
+			"type": "raster",
+			"source": "h8jp",
+			"minzoom": 1,
+			"maxzoom": 10			
+		}
+	]
+}

@@ -1,0 +1,23 @@
+{
+	"sources": {
+		"layer_town": {
+			"type": "vector",
+			"tiles": ["https://tb-gis-web.jgn-x.jp/api/vector-adm/tile/town/{z}/{x}/{y}.pbf"],
+			"attribution" : "<a href='https://geoshape.ex.nii.ac.jp/vector-adm/'>2015年国勢調査小地域</a>"
+		}	
+	},
+	"layers": [
+		{
+			"id": "L4",
+			"name" : "町丁目境界",
+			"source": "layer_town",
+			"source-layer": "town",
+                        "type": "line",
+                        "paint": {
+                                   "line-color": "rgb(44, 123, 182)"
+			},
+			"minzoom": 13,
+			"maxzoom": 20
+		}
+	]
+}

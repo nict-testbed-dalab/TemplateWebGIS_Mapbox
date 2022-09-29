@@ -1,0 +1,37 @@
+{
+	"sources": {
+		"layer_town_extrusion": {
+			"type": "vector",
+			"tiles": ["https://tb-gis-web.jgn-x.jp/api/vector-adm/tile/town/{z}/{x}/{y}.pbf"],
+			"attribution" : "<a href='https://geoshape.ex.nii.ac.jp/vector-adm/'>2015年国勢調査小地域</a>"
+		}	
+	},
+	"layers": [
+		{
+			"id": "L4",
+			"name" : "町丁目境界",
+			"source": "layer_town_extrusion",
+			"source-layer": "town",
+                        "type": "fill-extrusion",
+                        "paint": {
+	                    "fill-extrusion-color":
+			     ["step",
+                                   ["get", "JINKO"],
+                                   "rgb(232, 91, 58)",1000,
+                                   "rgb(249, 158, 89)",5000,
+                                   "rgb(254, 201, 128)",10000,
+                                   "rgb(255, 237, 170)",15000,
+                                   "rgb(237, 247, 201)",20000,
+                                   "rgb(199, 230, 219)",25000,
+                                   "rgb(157, 207, 228)",30000,
+                                   "rgb(100, 165, 205)",35000,
+                                   "rgb(44, 123, 182)",40000,
+                                   "rgb(44, 123, 182)"
+                            ],
+                            "fill-extrusion-height": ["get", "JINKO"]
+			},
+			"minzoom": 10,
+			"maxzoom": 20
+                 }
+	]
+}

@@ -1,0 +1,96 @@
+{
+    "sources": {
+        "1_a_1_1_kaigansen": {
+            "type": "vector",
+            "tiles": [
+                "https://tb-gis-web-dev.jgn-x.jp/api/data/vectortile/1_a_1_1_kaigansen/{z}/{x}/{y}.pbf"
+            ]
+        }
+    },
+    "layers": [
+    {
+        "id": "Lineex",
+        "source": "1_a_1_1_kaigansen",
+	"name": "海岸線",
+        "source-layer": "kaigansen",
+        "type": "line",
+        "paint": {
+            "line-color": "#000000",
+            "line-width": 1,
+            "line-opacity": 1.0
+        }
+    },
+    {
+        "id": "line1",
+        "source": "1_a_1_1_kaigansen",
+        "source-layer": "kaigansen",
+        "filter": ["==","C23_005","1"],
+        "type": "line",
+        "paint": {
+            "line-color": "#00FF00",
+            "line-width": 1,
+            "line-opacity": 1.0
+        }
+    },
+    {
+        "id": "line2",
+        "source": "1_a_1_1_kaigansen",
+        "source-layer": "kaigansen",
+        "filter": ["==","C23_005","2"],
+        "type": "line",
+        "paint": {
+            "line-color": "#00FFFF",
+            "line-width": 1,
+            "line-opacity": 1.0
+        }
+    },
+    {
+        "id": "line3",
+        "source": "1_a_1_1_kaigansen",
+        "source-layer": "kaigansen",
+        "filter": ["==","C23_005","3"],
+        "type": "line",
+        "paint": {
+            "line-color": "#FFFF00",
+            "line-width": 1,
+            "line-opacity": 1.0
+        }
+    },
+    {
+        "id": "line4",
+        "source": "1_a_1_1_kaigansen",
+        "source-layer": "kaigansen",
+        "filter": ["==","C23_005","4"],
+        "type": "line",
+        "paint": {
+            "line-color": "#FF0000",
+            "line-width": 1,
+            "line-opacity": 1.0
+        }
+    },
+    {
+        "id": "line9",
+        "source": "1_a_1_1_kaigansen",
+        "source-layer": "kaigansen",
+        "filter": ["==","C23_005","9"],
+        "type": "line",
+        "paint": {
+            "line-color": "#FF00FF",
+            "line-width": 1,
+            "line-opacity": 1.0
+        }
+    },
+    {
+        "id": "line0",
+        "source": "1_a_1_1_kaigansen",
+        "source-layer": "kaigansen",
+        "filter": ["==","C23_005","0"],
+        "type": "line",
+        "paint": {
+            "line-color": "#0000FF",
+            "line-width": 1,
+            "line-opacity": 1.0
+        }
+    }
+]
+}

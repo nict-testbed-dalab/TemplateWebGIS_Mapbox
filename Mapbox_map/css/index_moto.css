@@ -1,0 +1,23 @@
+/******************************************************************************/
+/* k2go STARScontroller                                                       */
+/* author    : Inoue Computer Service.                                        */
+/* copyright : k2go                                                           */
+/* version   : 1.0.0                                                          */
+/******************************************************************************/
+
+body {
+    height:100%;
+    background: #999;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+html, iframe { width:100%; height:100%; margin:0; padding:0; border:none; overflow:hidden; }
+
+#map { position: absolute; top: 0; bottom: 0; width: 100%; background: #efefef;}

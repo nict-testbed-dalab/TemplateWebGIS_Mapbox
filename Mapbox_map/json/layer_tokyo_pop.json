@@ -1,0 +1,45 @@
+  {
+        "sources": {
+                "layer_tokyo_pop": {
+                        "type": "geojson",
+                        "data": "./data/tokyo_point_2015.geojson"
+                }
+        },
+        "layers": [
+           {
+             "id": "population",
+             "type": "circle",
+             "source": "layer_tokyo_pop",
+             "paint": {
+               "circle-color":
+               [
+                   "step",
+                   ["get", "人口"],
+                   "#fdccb8",100000,
+                   "#f44d38",150000, 
+                   "#f44d38",200000, 
+                   "#c5161c"
+               ],
+               "circle-radius":[
+                   "step",
+                  ["get", "人口"],
+                  12, 100000,
+                  20, 200000,
+                  30
+               ]
+             }
+           },
+           {
+             "id": "population2",
+             "type": "symbol",
+             "source": "layer_tokyo_pop",
+             "layout": {
+               "text-field": ["concat", ["to-string", ["get", "人口"]], "人"],
+               "text-size": 10
+               },
+             "paint": {
+               "text-color": "rgba(255,255,255,0.8)"
+             }
+           }
+        ]
+}

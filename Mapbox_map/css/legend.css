@@ -1,0 +1,159 @@
+#legend {
+  position : fixed;
+  top : 160px;
+  right : 5px;
+  height : 300px;
+  width : 50px;
+/*
+  background-color : rgba(100, 100, 100, 0.5);
+  border-radius : 5px;
+  padding-left : 5px;
+*/
+}
+#legend .legend {
+  height : 100%;
+  width : 100%;
+}
+#legend .legend.amjp, #legend .legend.amjp_org_color, #legend .legend.amjp_nict_color, #legend .legend.amjp_temp, #legend .legend.amjp_humidity, #legend .legend.amjp_wnd, #legend .legend.amjp_pvp, #legend .legend.amjp_noct {
+  background-color : rgba(100, 100, 100, 0.5);
+  border-radius : 5px;
+  padding-left : 5px;
+}
+#legend .legend.amjp img, #legend .legend.amjp_org_color img, #legend .legend.amjp_nict_color img, #legend .legend.amjp_temp img, #legend .legend.amjp_humidity img, #legend .legend.amjp_wnd img, #legend .legend.amjp_pvp img, #legend .legend.amjp_noct img{
+  width : 100%;
+  height : 100%;
+}
+#legend .legend.amjp .scale, #legend .legend.amjp_org_color .scale, #legend .legend.amjp_nict_color .scale, #legend .legend.amjp_humidity .scale, #legend .legend.amjp_wnd .scale, #legend .legend.amjp_pvp .scale, #legend .legend.amjp_noct .scale{
+  background : url(../img/amjp_colorbar_scale.png) no-repeat;
+  background-size: 50px 300px;
+  -webkit-background-size: 50px 300px;
+  height : 300px;
+  width : 100%;
+  padding-top : 30px;
+}
+#legend .legend.amjp_temp .scale{
+  background : url(../img/amjp_colorbar_scale_temp.png) no-repeat;
+  background-size: 50px 300px;
+  -webkit-background-size: 50px 300px;
+  height : 300px;
+  width : 100%;
+  padding-top : 30px;
+}
+#legend .legend.amjp_humidity .scale{
+  background : url(../img/amjp_colorbar_scale_humidity.png) no-repeat;
+  background-size: 50px 300px;
+  -webkit-background-size: 50px 300px;
+  height : 300px;
+  width : 100%;
+  padding-top : 30px;
+}
+#legend .legend.amjp_wnd .scale{
+  background : url(../img/amjp_colorbar_scale_wnd.png) no-repeat;
+  background-size: 50px 300px;
+  -webkit-background-size: 50px 300px;
+  height : 300px;
+  width : 100%;
+  padding-top : 30px;
+}
+#legend .legend.amjp_pvp .scale{
+  background : url(../img/amjp_colorbar_scale_pvp.png) no-repeat;
+  background-size: 50px 300px;
+  -webkit-background-size: 50px 300px;
+  height : 300px;
+  width : 100%;
+  padding-top : 30px;
+}
+#legend .legend.amjp_noct .scale{
+  background : url(../img/amjp_colorbar_scale_noct.png) no-repeat;
+  background-size: 50px 300px;
+  -webkit-background-size: 50px 300px;
+  height : 300px;
+  width : 100%;
+  padding-top : 30px;
+}
+#legend .legend.amjp .colorbar, #legend .legend.amjp_org_color .colorbar, #legend .legend.amjp_nict_color .colorbar, #legend .legend.amjp_temp .colorbar, #legend .legend.amjp_humidity .colorbar, #legend .legend.amjp_pvp .colorbar, #legend .legend.amjp_noct .colorbar{
+  height : 252px;
+  width : 17px;
+  background-color : #B3D1FF;
+}
+#legend .legend.amjp_wnd .colorbar{
+  height : 252px;
+  width : 17px;
+}
+
+#legend .legend.wni, #legend .legend.radar {
+  background-color : rgba(100, 100, 100, 0.5);
+  border-radius : 5px;
+  padding-left : 5px;
+}
+#legend .legend.wni img, #legend .legend.radar img{
+  width : 100%;
+  height : 100%;
+}
+#legend .legend.wni .scale{
+  background : url(../img/wni_colorbar_scale.png) no-repeat;
+  background-size: 50px 300px;
+  -webkit-background-size: 50px 300px;
+  height : 300px;
+  width : 100%;
+  /* padding-top : 30px; */
+  padding-top : 18px;
+}
+#legend .legend.radar .scale{
+  background : url(../img/radar_colorbar_scale.png) no-repeat;
+  background-size: 50px 300px;
+  -webkit-background-size: 50px 300px;
+  height : 300px;
+  width : 100%;
+  padding-top : 30px;
+}
+#legend .legend.wni .colorbar, #legend .legend.radar .colorbar{
+  height : 252px;
+  width : 17px;
+  background-color : #B3D1FF;
+}
+
+
+.pop_legend {
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  bottom: 350px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #FFFFFF;
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 10px;
+  position: absolute;
+  right: 60px;
+  z-index: 1;
+}
+ 
+.pop_legend div span {
+  border-radius: 50%;
+  display: inline-block;
+  height: 10px;
+  margin-right: 5px;
+  width: 10px;
+}
+
+
+.jinryu_legend {
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  bottom: 45px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #FFFFFF;
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 10px;
+  position: absolute;
+  right: 60px;
+  z-index: 1;
+}
+
+.jinryu_legend div span {
+  border-radius: 50%;
+  display: inline-block;
+  height: 10px;
+  /* margin-left: 20px; */
+  margin-right:5px;
+  width: 10px;
+}

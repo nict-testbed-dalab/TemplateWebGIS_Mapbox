@@ -1,0 +1,81 @@
+/******************************************************************************/
+/* k2go STARScontroller                                                       */
+/* author    : Inoue Computer Service.                                        */
+/* copyright : k2go                                                           */
+/* version   : 1.0.0                                                          */
+/******************************************************************************/
+
+body {
+    height:100%;
+    background: #999;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+html, iframe { width:100%; height:100%; margin:0; padding:0; border:none; overflow:hidden; }
+
+#map { position: absolute; top: 0; bottom: 0; width: 100%; background: #efefef;}
+
+#bargraph_controller {
+  position:relative;
+  width: 175px;
+  /* height: 75px; */
+  top: 50px;
+  left: 240px;
+  /* background-color: white; */
+}
+
+.hidden{
+  visibility:hidden;
+}
+
+#bargraph_controller > div {
+  position:relative;
+  /* width: 220px; */
+  height: 25px;
+}
+
+#bargraph_controller > div > #label {
+  position:relative;
+  width: 100px;
+  /* height: 25px; */
+  border: 1px solid blue;
+  background-color: rgba(0, 119, 255, 0.6);
+  float: left;
+}
+
+#bargraph_controller > div > #label > span{
+  color:white;
+  font-size: 14px;
+  margin-left: 3px;
+  margin-bottom: 5px;
+}
+
+#bargraph_controller > div > #count {
+  position:relative;
+  width: 65px;
+  height: 22px;
+  border: 1px solid blue;
+  background-color: rgba(89, 102, 114, 0.6);
+  float: left;
+  text-align: center;
+  font-size: 16px;
+  color:white
+}
+
+.color_patern  {
+  position:relative;
+  width: 71px;
+  height: 25.5px;
+  border: 1px solid blue;
+  background-color: rgba(89, 102, 114, 0.6);
+  float: left;
+  text-align: center;
+  font-size: 16px;
+}

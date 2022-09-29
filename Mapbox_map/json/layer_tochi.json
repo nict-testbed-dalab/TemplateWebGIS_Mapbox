@@ -1,0 +1,198 @@
+{
+	"sources": {
+		"vector-2": {
+			"type": "vector",
+			"tiles": ["https://tb-gis-web-dev.jgn-x.jp/storage/data/vectortile/1_a_3_2_tochi/pbf/{z}/{x}/{y}.pbf"]
+		}	
+	},
+	"layers": [
+        {
+            "id": "L2",
+            "name": "土地利用",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0100"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FFFF00",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_1",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0200"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FFCC99",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_2",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0300"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#008080",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_3",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0400"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FF00FF",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_4",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0500"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#008000",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_5",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0600"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FF9900",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_6",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0700"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FF0000",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_7",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0800"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#008000",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_8",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0901"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#808080",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_9",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","0902"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#C0C0C0",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_10",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","1000"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#800000",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_11",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","1100"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#0000FF",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_12",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","1200"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#808000",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_13",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","1300"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#800080",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_14",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","1400"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FFFF99",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_15",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","1500"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#00FFFF",
+                "fill-opacity": 0.5
+            }
+        },
+        {
+            "id": "polygon_16",
+            "source": "vector-2",
+            "source-layer": "jgd_GML_shp_all",
+            "filter": ["==","土地利用種","1600"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#00FF00",
+                "fill-opacity": 0.5
+            }
+        }
+	]
+}

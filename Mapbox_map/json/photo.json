@@ -1,0 +1,18 @@
+{
+	"sources": {
+		"photo": {
+			"type": "raster",
+			"tiles": ["/api/data/rastertile/photo/{z}/{x}/{y}.png"]
+		}
+	},
+	"layers": [
+		{
+			"id": "photo1",
+			"name" : "航空写真",
+			"type": "raster",
+			"source": "photo",
+			"minzoom": 2,
+			"maxzoom": 16			
+		}
+	]
+}

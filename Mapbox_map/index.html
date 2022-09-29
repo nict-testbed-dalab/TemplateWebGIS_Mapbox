@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mapbox</title>
+
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.2/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.2/mapbox-gl.css' rel='stylesheet'/>
+  <script src="https://unpkg.com/deck.gl@^8.1.0/dist.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="js/layer_conf.js"></script>
+  <script type="text/javascript" src="js/controller.js?date=20220314_2"></script>
+
+  <link   type="text/css"        href="css/index.css?date=20220314_6" rel="stylesheet">
+  <link   type="text/css"        href="css/menu.css?date=20211201_25" rel="stylesheet">
+  <link   type="text/css"        href="css/side-menu.css?date=20211201_25" rel="stylesheet">
+  <link   type="text/css"        href="css/legend.css?date=20220228_1" rel="stylesheet">
+
+</head>
+
+<body>
+  <div id="base_menu">
+    <input id="base_gsi_std_vector" type="radio" name="rtoggle" value="1" >
+    <label for="base_gsi_std_vector">地理院地図Vector</label>
+
+    <input id="base_gsi_pale" type="radio" name="rtoggle" value="2" checked="checked">
+    <label for="base_gsi_pale">地理院タイル（淡色地図）</label>
+
+    <input id="base_gsi_std" type="radio" name="rtoggle" value="3">
+    <label for="base_gsi_std">地理院タイル（標準地図）</label>
+
+    <input id="base_gsi_photo" type="radio" name="rtoggle" value="4">
+    <label for="base_gsi_photo">地理院タイル（航空写真）</label>
+
+    <input id="base_osm_vector" type="radio" name="rtoggle" value="5">
+    <label for="base_osm_vector">OSM(ベクター)</label>
+
+    <input id="base_osm_raster" type="radio" name="rtoggle" value="6">
+    <label for="base_osm_raster">OSM(ラスター)</label>
+ </div>
+
+  <div id="side-menu">
+    <dl class="ac">
+      <dt class="ac-parent">地理空間情報 水域</dt>
+      <dd class="ac-child" id="ac_group1_1"></dd>
+      <dt class="ac-parent">地理空間情報 土地利用</dt>
+      <dd class="ac-child" id="ac_group1_3"></dd>
+      <dt class="ac-parent">地理空間情報 災害防災</dt>
+      <dd class="ac-child" id="ac_group1_4"></dd>
+      <dt class="ac-parent">地理空間情報 施設</dt>
+      <dd class="ac-child" id="ac_group1_5"></dd>
+      <dt class="ac-parent">地理空間情報 交通</dt>
+      <dd class="ac-child" id="ac_group1_6"></dd>
+      <dt class="ac-parent">気象情報データベース</dt>
+      <dd class="ac-child" id="ac_group2"></dd>
+      <dt class="ac-parent">3次元建物</dt>
+      <dd class="ac-child" id="ac_group3"></dd>
+      <dt class="ac-parent">行政境界</dt>
+      <dd class="ac-child" id="ac_group4"></dd>
+      <dt class="ac-parent">DEM</dt>
+      <dd class="ac-child" id="ac_group5"></dd>
+      <dt class="ac-parent">センサデータ</dt>
+      <dd class="ac-child" id="ac_group6"></dd>
+    </dl>
+  </div>
+
+  <div id="map"></div>
+  <div id="bargraph_controller" class="hidden">
+    <div id="radius">
+      <div id="label"><span>太さ(半径)</span></div>
+      <!-- <div id="plus"><b>＋</b></div>
+      <div id="minus"><b>－</b></div> -->
+      <input type="number" id="count"  step="1" value="3" min="1" max="10"/>
+    </div>
+    <div id="elevation">
+      <div id="label"><span>高さ(倍率)</span></div>
+      <input type="number" id="count"  step="0.1" value="1.0" min="0.1" max="10"/>
+    </div>
+    <div id="color3">
+      <div id="label"><span>色：住宅数</span></div>
+      <select id="color_patern3" class="color_patern" style="color:yellow">
+        <option value="red" style="color:red;" >赤</option>
+        <option value="DarkOrange" style="color:DarkOrange;">橙</option>
+        <option value="yellow" style="color:yellow" selected>黄</option>
+        <option value="Lime" style="color:Lime">黄緑</option>
+        <option value="green" style="color:green">緑</option>
+        <option value="cyan" style="color:cyan">水色</option>
+        <option value="blue" style="color:blue" >青</option>
+        <option value="purple" style="color:purple">紫</option>
+        <option value="DeepPink" style="color:DeepPink">ピンク</option>
+        <option value="SaddleBrown" style="color:SaddleBrown">茶色</option>
+      </select>
+    </div>
+    <div id="color1">
+      <div id="label"><span>色：人口</span></div>
+      <select id="color_patern1" class="color_patern" style="color:blue">
+        <option value="red" style="color:red;">赤</option>
+        <option value="DarkOrange" style="color:DarkOrange;">橙</option>
+        <option value="yellow" style="color:yellow">黄</option>
+        <option value="Lime" style="color:Lime">黄緑</option>
+        <option value="green" style="color:green">緑</option>
+        <option value="cyan" style="color:cyan">水色</option>
+        <option value="blue" style="color:blue" selected>青</option>
+        <option value="purple" style="color:purple">紫</option>
+        <option value="DeepPink" style="color:DeepPink">ピンク</option>
+        <option value="SaddleBrown" style="color:SaddleBrown">茶色</option>
+      </select>
+    </div>
+    <div id="color2">
+      <div id="label"><span>色：世帯数</span></div>
+      <select id="color_patern2" class="color_patern"  style="color:red">
+        <option value="red" style="color:red;" selected>赤</option>
+        <option value="DarkOrange" style="color:DarkOrange;">橙</option>
+        <option value="yellow" style="color:yellow">黄</option>
+        <option value="Lime" style="color:Lime">黄緑</option>
+        <option value="green" style="color:green">緑</option>
+        <option value="cyan" style="color:cyan">水色</option>
+        <option value="blue" style="color:blue" >青</option>
+        <option value="purple" style="color:purple">紫</option>
+        <option value="DeepPink" style="color:DeepPink">ピンク</option>
+        <option value="SaddleBrown" style="color:SaddleBrown">茶色</option>
+      </select>
+    </div>      
+  </div>
+  <div id="legend"></div>
+  <div id="pop_legend" class="pop_legend"></div>
+  <div id="jinryu_legend" class="jinryu_legend"></div>
+
+  <script type="text/javascript" src="https://unpkg.com/@turf/turf@6.3.0/turf.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/deck.gl@^8.0.0/dist.min.js"></script>
+  <script type="text/javascript" src="content/history_boundary.js?date=20220107_7"></script>
+  <script type="text/javascript" src="js/DisplayCapture.js?date=20220221_9"></script>
+  <script type="text/javascript" src="js/fnc.js?date=20220221_6"></script>
+  <script type="text/javascript" src="js/geojson_layer.js?date=20220107_6"></script>
+  <script type="text/javascript" src="js/index.js?date=20220314_2"></script>
+</body>
+</html>

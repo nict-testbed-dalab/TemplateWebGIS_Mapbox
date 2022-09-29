@@ -1,0 +1,18 @@
+{
+	"sources": {
+		"wni": {
+			"type": "raster",
+			"tiles": ["/api/weather_wni/wni/{yyyymmdd}/{hhmm}/{z}/{x}/{y}.png"]
+		}
+	},
+	"layers": [
+		{
+			"id": "wni1",
+			"name" : "高解像度降水ナウキャスト",
+			"type": "raster",
+			"source": "wni",
+			"minzoom": 1,
+			"maxzoom": 9			
+		}
+	]
+}

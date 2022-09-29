@@ -1,0 +1,188 @@
+{
+	"sources": {
+		"1_a_4_2_dosya": {
+			"type": "vector",
+			"tiles": ["https://tb-gis-web-dev.jgn-x.jp/storage/data/vectortile/1_a_4_2_dosya/pbf/{z}/{x}/{y}.pbf"]
+		}	
+	},
+	"layers": [
+		{
+			"id": "L7",
+			"name" : "土砂災害危険個所",
+			"source": "1_a_4_2_dosya",
+			"source-layer": "polygon",
+            "filter": ["==","A26_001","1"],			
+			"type": "fill",
+			"paint": {
+                "fill-color": "#CC9966",
+                "fill-outline-color": "#232323",
+                "fill-opacity": 1.0
+			},
+			"minzoom": 1,
+			"maxzoom": 14
+		},
+		{
+            "id": "Polygon2",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "polygon",
+            "filter": ["==","A26_001","2"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FF6666",
+                "fill-outline-color": "#232323",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "Polygon5",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "polygon",
+            "filter": ["==","A26_001","5"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FF9966",
+                "fill-outline-color": "#232323",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "Polygon6",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "polygon",
+            "filter": ["==","A26_001","6"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FF66FF",
+                "fill-outline-color": "#232323",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "Polygon7",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "polygon",
+            "filter": ["==","A26_001","7"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#339966",
+                "fill-outline-color": "#232323",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "Polygon8",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "polygon",
+            "filter": ["==","A26_001","8"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#800000",
+                "fill-outline-color": "#232323",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "Polygon9",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "polygon",
+            "filter": ["==","A26_001","9"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#FF9900",
+                "fill-outline-color": "#232323",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "Polygon10",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "polygon",
+            "filter": ["==","A26_001","10"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#C0C0C0",
+                "fill-outline-color": "#232323",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "Polygon11",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "polygon",
+            "filter": ["==","A26_001","11"],
+            "type": "fill",
+            "paint": {
+                "fill-color": "#808080",
+                "fill-outline-color": "#232323",
+                "fill-opacity": 1.0
+            }
+        },
+        {
+            "id": "Rever1",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "line",
+            "filter": ["==","A26_003","1"],
+            "type": "line",
+            "paint": {
+                "line-color": "#008080",
+                "line-width": 1,
+                "line-opacity": 1.0
+            }
+        },
+        {
+            "id": "Rever2",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "line",
+            "filter": ["==","A26_003","3"],
+            "type": "line",
+            "paint": {
+                "line-color": "#000080",
+                "line-width": 1,
+                "line-opacity": 1.0
+            }
+        },
+        {
+            "id": "Point_11",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "multipoints",           
+            "filter": ["==","A26_005","11"],
+            "type": "circle",
+            "name": "Bright",
+            "paint": {
+                "circle-color": "#FF0000",
+                "circle-radius": {
+                    "stops":[[7,10],[10,5]]
+                },
+                "circle-opacity": 1.0
+            }
+        },
+        {
+            "id": "Point_4",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "point",
+            "filter": ["==","A26_005","4"],
+            "type": "circle",
+            "paint": {
+                "circle-color": "#00FFFF",
+                "circle-radius": {
+                    "stops":[[7,10],[10,5]]
+                },
+                "circle-opacity": 1.0
+            }
+        },
+        {
+            "id": "Point_5",
+            "source": "1_a_4_2_dosya",
+            "source-layer": "point",
+            "filter": ["==","A26_005","5"],
+            "type": "circle",
+            "paint": {
+                "circle-color": "#FF0000",
+                "circle-radius": {
+                    "stops":[[7,10],[10,5]]
+                },
+                "circle-opacity": 1.0
+            }
+        }
+    ]
+}

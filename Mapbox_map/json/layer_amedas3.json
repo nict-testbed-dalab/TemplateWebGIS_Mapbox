@@ -1,0 +1,20 @@
+{
+        "sources": {
+                "layer_amedas": {
+                        "type": "geojson",
+                        "data": ""
+                }
+        },
+        "layers": [
+                {
+                        "id": "L1",
+                        "type": "fill",
+                        "source": "layer_amedas",
+                        "paint": {
+                            "fill-color": "red"
+                        },
+                        "minzoom": 1,
+                        "maxzoom": 18
+                }
+        ]
+}

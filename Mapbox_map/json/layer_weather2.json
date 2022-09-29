@@ -1,0 +1,18 @@
+{
+	"sources": {
+		"vector-weather2": {
+			"type": "raster",
+			"tiles": ["/api/weather/{type}/{yyyy}/{mm}/{dd}/{hh}/{mi}/{z}/{x}/{y}.png"]
+		}
+	},
+	"layers": [
+		{
+			"id": "L6",
+			"name" : "日照量",
+			"type": "raster",
+			"source": "vector-weather2",
+			"minzoom": 1,
+			"maxzoom": 10			
+		}
+	]
+}

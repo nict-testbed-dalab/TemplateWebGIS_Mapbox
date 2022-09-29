@@ -1,0 +1,18 @@
+{
+	"sources": {
+		"amjp": {
+			"type": "raster",
+			"tiles": ["/api/weather/amjp/{yyyy}/{mm}/{dd}/{hh}/{mi}/{z}/{x}/{y}.png"]
+		}
+	},
+	"layers": [
+		{
+			"id": "amjp1",
+			"name" : "日照量",
+			"type": "raster",
+			"source": "amjp",
+			"minzoom": 1,
+			"maxzoom": 10			
+		}
+	]
+}

@@ -1,0 +1,25 @@
+{
+	"version": 8,
+	"glyphs": "https://maps.gsi.go.jp/xyz/noto-jp/{fontstack}/{range}.pbf",
+	"sources": {
+		"1_a_5_3_yakuba": {
+			"type": "vector",
+			"tiles": ["https://tb-gis-web-dev.jgn-x.jp/storage/data/vectortile/1_a_5_3_yakuba/{z}/{x}/{y}.pbf"]
+		}	
+	},
+	"layers": [
+        {
+            "id": "L9",
+			"name" : "市区町村役場",
+            "source": "1_a_5_3_yakuba",
+            "source-layer": "yakuba2",
+            "type": "circle",
+            "paint": {
+                "circle-color": "#00FFFF",
+                "circle-radius": {
+                    "stops":[[7,10],[10,5]]
+                }
+            }
+        }		
+    ]
+}

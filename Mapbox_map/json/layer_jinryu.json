@@ -1,0 +1,35 @@
+{
+	"sources": {
+		"layer_jinryu": {
+			"type": "geojson",
+			"data": ""
+		}	
+	},
+	"layers": [
+		{
+			"id": "L1",
+			"type": "circle",
+			"source": "layer_jinryu",
+			"paint": {
+				"circle-radius": 10,
+				"circle-color": [
+					"match",
+					["get", "device"],
+					"0003","#00FF3B",
+					"0004","#00F9A9",
+					"0005","#B6FF01",
+					"0006","#00ECFF",
+					"0007","#005FFF",
+					"000A","#D2691E",
+					"000B","#CD5C5C",
+					"000C","#A52A2A",
+					"000D","#8B0000",
+					"0011","#DC143C",
+					"#DC143C"
+					]
+			},
+			"minzoom": 1,
+			"maxzoom": 18
+		}
+	]
+}

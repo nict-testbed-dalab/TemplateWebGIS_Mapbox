@@ -1,0 +1,25 @@
+{
+      "sources": {
+        "layer_plateau_yokosuka": {
+          "type": "vector",
+          "tiles": [
+            "https://tb-gis-web.jgn-x.jp/api/PLATEAU/yokosuka/mvt/{z}/{x}/{y}.pbf"
+          ],
+          "minzoom": 10,
+          "maxzoom": 16
+        }
+      },
+      "layers": [
+      {
+        "id": "bldg",
+        "type": "fill-extrusion",
+        "source": "layer_plateau_yokosuka",
+        "source-layer": "bldg",
+        "minzoom": 10,
+        "maxzoom": 20,
+        "paint": {
+          "fill-extrusion-color": "#008000",
+          "fill-extrusion-height": ["get", "measuredHeight"]
+        }
+      }]
+}

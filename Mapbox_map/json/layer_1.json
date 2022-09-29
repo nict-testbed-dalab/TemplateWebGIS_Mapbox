@@ -1,0 +1,23 @@
+{
+	"sources": {
+		"vector-1": {
+			"type": "vector",
+			"tiles": ["https://indigo-lab.github.io/plateau-tokyo23ku-building-mvt-2020/{z}/{x}/{y}.pbf"]
+		}	
+	},
+	"layers": [
+		{
+			"id": "L1",
+			"name" : "建物(MVT)",
+			"type": "fill",
+			"source": "vector-1",
+			"source-layer": "bldg",
+			"paint": {
+				"fill-color": "#fcac90",
+				"fill-opacity": 0.5
+			},
+			"minzoom": 10,
+			"maxzoom": 18
+		}
+	]
+}

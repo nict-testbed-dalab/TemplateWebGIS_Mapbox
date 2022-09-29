@@ -1,0 +1,18 @@
+{
+	"sources": {
+		"amjp_veda02_sshfs_rh.sfc": {
+			"type": "raster",
+			"tiles": ["/api/weather_amjp_veda02_sshfs/rh.sfc/{yyyy}/{mm}/{dd}/{hh}/{mi}/{z}/{x}/{y}.png"]
+		}
+	},
+	"layers": [
+		{
+			"id": "amjp_veda02_sshfs_rh.sfc",
+			"name" : "地表面湿度",
+			"type": "raster",
+			"source": "amjp_veda02_sshfs_rh.sfc",
+			"minzoom": 1,
+			"maxzoom": 10			
+		}
+	]
+}

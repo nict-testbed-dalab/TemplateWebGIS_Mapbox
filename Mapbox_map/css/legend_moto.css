@@ -1,0 +1,29 @@
+.legend{
+    position: absolute; 
+    background: rgba(50, 50, 50, 0.4);
+    z-index: 2;
+    top: 180px;
+    right: 10px;
+    width: 100px; 
+    height: 120px;
+    border-radius: 5px;
+    /* border: 1px solid rgba(0, 0, 0, 0.4); */
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 14px;
+  }
+.legend-item-color {
+    /* display: block; */
+    width: 15px; 
+    height: 15px;
+    margin-left: 5px; 
+    margin-right: 5px; 
+}
+
+.legend-disable{
+    display:none
+}
