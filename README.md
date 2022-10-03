@@ -1,5 +1,5 @@
 # TemplateWebGIS_Mapbox
-iTownsを用いたデータ分析・可視化WebGISアプリ  
+Mapboxを用いたデータ分析・可視化WebGISアプリ  
 
 ## 概要
 MapboxをベースとしたWebGISアプリ向けデータ可視化機能を活用して、対象の時系列データを可視化するWebGISアプリケーションです。   
