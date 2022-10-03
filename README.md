@@ -1,8 +1,8 @@
-# TemplateWebGIS_iTowns
+# TemplateWebGIS_Mapbox
 iTownsを用いたデータ分析・可視化WebGISアプリ  
 
 ## 概要
-iTownsをベースとしたWebGISアプリ向けデータ可視化機能を活用して、対象の時系列データを可視化するWebGISアプリケーションです。   
+MapboxをベースとしたWebGISアプリ向けデータ可視化機能を活用して、対象の時系列データを可視化するWebGISアプリケーションです。   
 可視化の対象は以下のデータです。
 - 国土交通省国土数値情報
 - 降雨データ
