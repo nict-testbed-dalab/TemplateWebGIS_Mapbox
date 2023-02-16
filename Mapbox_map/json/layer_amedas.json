@@ -13,16 +13,15 @@
                         "paint": {
                             "fill-extrusion-color":
                              ["step",
-                                   ["get", "height"],
-                                   "#aaaaaa",2,
-				   "#c4c4c4",100,
-                                   "#0404fc",500,
-                                   "#04fcfc",1000,
-                                   "#04fc04",2000,
-                                   "#fcfc04",3000,
-                                   "#fa95f2",5000,
-                                   "#f60807",8000,
-                                   "#f60807"
+                                   ["get", "precipitation24h"],
+                                   "#555555",50,
+                                   "#A0D2FF",80,
+                                   "#2190FF",100,
+                                   "#0041FF",150,
+                                   "#FFF500",200,
+                                   "#FF9900",250,
+                                   "#FF2800",300,
+                                   "#B40068"
                             ],
                             "fill-extrusion-height": ["get", "height"]
                         },

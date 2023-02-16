@@ -28,18 +28,6 @@
                   30
                ]
              }
-           },
-           {
-             "id": "population2",
-             "type": "symbol",
-             "source": "layer_tokyo_pop",
-             "layout": {
-               "text-field": ["concat", ["to-string", ["get", "人口"]], "人"],
-               "text-size": 10
-               },
-             "paint": {
-               "text-color": "rgba(255,255,255,0.8)"
-             }
            }
         ]
 }

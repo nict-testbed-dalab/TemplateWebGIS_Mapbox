@@ -3,18 +3,43 @@
 /* See License.txt for the license information.                               */
 /******************************************************************************/
 
+// *******************************************************
+// 各種共通変数（固定、可変あり）
+// *******************************************************
 let wgapp = {};
 wgapp.val = 1;    
 accessToken = ""
-url_select_layerids = {} // URLで選択レイヤのsource_idと透明度のJson{source_id:{opacity:値}}}
+let url_select_layerids = {} // URLで選択レイヤのsource_idと透明度のJson{source_id:{opacity:値}}}
 
-jinryu_exist_date = "" // 人流データが存在している年月日
+let jinryu_exist_date = "" // 人流データが存在している年月日
 
-g_current_p = Date.now();
+let geojson_data = {}           // レイヤごとのgeojson
+let mf_json_time_geojsons = {}; // mf_jsonのレイヤごとのgeojson
+let date_int_list = {};       ; // レイヤの時刻キー
+let mf_json_closest_date = null; // 表示している一番近い時刻
 
+
+// 前処理の定義と一時保存変数
+const API_URL = "https://tb-gis-web.jgn-x.jp/api"
+//const API_URL = "http://localhost:5000"
+const self_prepro_source_ids = ['layer_amedas', 'layer_garbagetruck', 'layer_garbagetruck_trajectory'];
+const self_api_names = {'layer_amedas':"t_preprocessing_amedas_data",'layer_garbagetruck':"t_preprocessing_garbagetruck_data",'layer_garbagetruck_trajectory':"t_preprocessing_garbagetruck_data"};  // API名
+let prepro_response_geojsons = {'layer_amedas':{}, 'layer_garbagetruck':{}};     // 前処理の時刻ごとのgeojson
+let prepro_date_int_list =  {'layer_amedas':[], 'layer_garbagetruck':[]};         // 前処理の時刻キー
+
+// 選択時刻
+let g_current_p = Date.now();
+
+
+// *******************************************************
 // 基盤地図
+// *******************************************************
 const base_map_inputs = document.getElementById('base_menu').getElementsByTagName('input');
 
+// *******************************************************
+// 最初のmapbox定義
+// center：東京駅付近
+// *******************************************************
 mapboxgl.accessToken = mapbox_accessToken;
 wgapp.map = new mapboxgl.Map({
    container: "map",
@@ -38,20 +63,47 @@ wgapp.map = new mapboxgl.Map({
  wgapp.bargraph.radiusSize = 3;
  wgapp.bargraph.elevationScale = 1;
 
-// 基盤地図選択変更イベント
+// 基盤地図選択変更イベントを定義
 for (const input of base_map_inputs) {
   input.onclick = (layer) => {
-    wgapp.map.once("styledata", make_layers); 
+    wgapp.map.once("styledata", changeStyledata);
     wgapp.map.setStyle('./json/base_map/' + layer.target.id + '.json?date=20220221_5');
   }
+}
+
+// 基盤地図選択変更の実処理
+function changeStyledata(){
+  // jsonファイルを読み込み、Layerを表示する
+  make_layers();
+
+  // 前処理データのラベル表示
+  const selectedLayerIds = getLayerIds();
+  if (selectedLayerIds.includes(self_prepro_source_ids[0])) {
+    setAmedasTextLayer();
+  }
+  if (selectedLayerIds.includes(self_prepro_source_ids[1])) {
+    setMovingObjectTextLayer("speed");
+  }
+  
+  // 時系列データは該当時刻のデータ表示
+  updatePreproJsonLayer(formatDate(g_current_p, 'YYYYMMDDhhmmss'), true); // make_layersしているので新規再作成
+
+  // 手動でアップロードしていたMF-JSON（クリアしているので新規）
+  updateMfJsonLayer(g_current_p.getTime(), true)
+
 }
 
 let layers_info = null;
  
 wgapp.map.on("load", () => {
+  // Geojsonを読み込む
   readGeoJSON();
+
   // jsonファイルを読み込み、Layerを表示する
   make_layers();
+
+  // GeoJsonアップロードエリアの表示
+  appendHTMLgeojson_upload();
 
   // コントローラーの位置を設定
    wgapp.map.addControl(new mapboxgl.ScaleControl(), 'top-right');
@@ -95,9 +147,10 @@ wgapp.map.on("load", () => {
 // JSONファイルを解析して読み込む
 async function readJSON(path){
     try{
-      const response = await fetch(path+"?date=20220228_3");
+      const response = await fetch(path+"?date=20230201_1");
       if (response.ok) {
-        return await response.json();
+        ret = await response.json()
+        return ret;
       } else {
         console.log("HTTP-Error: " + response.status);
         return null;
@@ -108,8 +161,10 @@ async function readJSON(path){
     }
 }
 
+// アメダスデータの読み込みフラグ (1:読み込み中, 2:キャッシュ(ファイルから読み込んだデータ）を新規描写)
+let amedass_flg = 0;
+
 // GeoJSONファイルを解析して読み込む
-amedass_flg = 0;
 async function readGeoJSON(){
   console.log("readGeoJSON start")
 
@@ -132,8 +187,9 @@ async function readGeoJSON(){
     selectedLayerIds = Object.keys(url_select_layerids);
   }
 
-  // console.log("selectedLayerIds", selectedLayerIds)
-
+  // *****************************************************************
+  // 人流データ
+  // *****************************************************************
   if (selectedLayerIds.includes("layer_jinryu")) {
     // 存在する年月日を取得
     if(jinryu_exist_date == ""){
@@ -178,30 +234,45 @@ async function readGeoJSON(){
     }
   }
 
-  if (selectedLayerIds.includes("layer_amedas")) {
-   if (amedass_flg == 1) {
-     return null;
-   }
-   path = "https://tb-gis-web.jgn-x.jp/api/t_amedas_data?point_1=" 
-		+ point_1 + "&point_2=" + point_2 + "&point_3=" + point_3 + "&point_4=" + point_4 + "&currentDate=" + selected_yyyymmdd + selected_hhmi;
-   try{
-      amedass_flg = 1;
-      const response = await fetch(path);
-      if (response.ok) {
-        geojson_data["layer_amedas"] =  await response.json();
-        setAmedasLayerSource();
-        setGeojsonLayerSource("layer_amedas_L1","layer_amedas");
-        amedass_flg = 0;
-    } else {
-        console.log("HTTP-Error: " + response.status);
+  // *****************************************************************
+  // アメダスデータ
+  // *****************************************************************
+  if (selectedLayerIds.includes(self_prepro_source_ids[0])) {
+
+    if (amedass_flg == 1 ){
+      // なにもしない（読み込み中 or キャッシュ利用中）
+
+
+    }else if (amedass_flg == 0 ){
+      // 該当する領域、日時のポイントデータを取得
+      console.log("<><><> call api t_amedas_data <><><> ")
+
+      path = "https://tb-gis-web.jgn-x.jp/api/t_amedas_data?point_1=" 
+      + point_1 + "&point_2=" + point_2 + "&point_3=" + point_3 + "&point_4=" + point_4 + "&currentDate=" + selected_yyyymmdd + selected_hhmi;
+
+      try{
+        amedass_flg = 1; // 読み込み中であることを明記
+
+        const response = await fetch(path);
+        if (response.ok) {
+          geojson_data[self_prepro_source_ids[0]] =  await response.json();
+          generateAmedasFeatures(); // @see moving_feature.js
+          setGeojsonLayerSource(self_prepro_source_ids[0] + "_L1", self_prepro_source_ids[0]);
+          amedass_flg = 0;
+
+        } else {
+          console.log("HTTP-Error: " + response.status);
+          amedass_flg = 0;
+          return null;
+        }
+
+      } catch(err) {
+        console.log(err);
         amedass_flg = 0;
         return null;
       }
-    } catch(err) {
-      console.log(err);
-      amedass_flg = 0;
-      return null;
     }
+
   }
 
   console.log("readGeoJSON end")
@@ -214,39 +285,47 @@ async function readGeoJSON(){
 async function get_layer_info() {
   ret_array = []; // 初期化
   json = null;  
-  for(key in layer_jsons){
-    aaa = key;
-    if (layer_jsons[key].path =='vectortile') {
-      json = await readJSON(vectortile_data_path + key + '/latest/style.json');
-      ret_array.push([aaa,json,layer_jsons[aaa].path]);
-    } else if (layer_jsons[key].path =='etc_1') {
-      json = await readJSON(etc_data_path + key + '.json');
-      ret_array.push([aaa,json,layer_jsons[aaa].path]);
-    } else if (layer_jsons[key].path =='etc_2') {
-      json = await readJSON(etc_data_path + key + '.json');
-      ret_array.push([aaa,json,layer_jsons[aaa].path]);
-    } else if (layer_jsons[key].path =='geojson') {
-      json = await readJSON(etc_data_path + key + '.json');
-      ret_array.push([aaa,json,layer_jsons[aaa].path]);
-    } else if (layer_jsons[key].path =='geojson2') {
-      json = await readJSON(etc_data_path + key + '.json');
-      ret_array.push([aaa,json,layer_jsons[aaa].path]);
-    }  else if (layer_jsons[key].path =='pointcloud') {
-      ret_array.push([aaa,"",layer_jsons[aaa].path]);
-    }  else if (layer_jsons[key].path =='polygoncloud') {
-        ret_array.push([aaa,"",layer_jsons[aaa].path]);
-    }  else if (layer_jsons[key].path =='poppointcloud') {
-        ret_array.push([aaa,"",layer_jsons[aaa].path]);
+  for(const l_key in const_layer_jsons){
+    if (const_layer_jsons[l_key].path =='vectortile') {
+      json = await readJSON(vectortile_data_path + l_key + '/latest/style.json');
+      ret_array.push([l_key, json,const_layer_jsons[l_key].path]);
+    } else if (const_layer_jsons[l_key].path =='etc_1') {
+      json = await readJSON(etc_data_path + l_key + '.json');
+      ret_array.push([l_key, json,const_layer_jsons[l_key].path]);
+    } else if (const_layer_jsons[l_key].path =='etc_2') {
+      json = await readJSON(etc_data_path + l_key + '.json');
+      ret_array.push([l_key, json,const_layer_jsons[l_key].path]);
+    } else if (const_layer_jsons[l_key].path =='geojson') {
+      json = await readJSON(etc_data_path + l_key + '.json');
+      ret_array.push([l_key, json,const_layer_jsons[l_key].path]);
+    } else if (const_layer_jsons[l_key].path =='geojson2') {
+      json = await readJSON(etc_data_path + l_key + '.json');
+      ret_array.push([l_key, json,const_layer_jsons[l_key].path]);
+    }  else if (const_layer_jsons[l_key].path =='pointcloud') {
+      ret_array.push([l_key, "",const_layer_jsons[l_key].path]);
+    }  else if (const_layer_jsons[l_key].path =='polygoncloud') {
+        ret_array.push([l_key, "",const_layer_jsons[l_key].path]);
+    }  else if (const_layer_jsons[l_key].path =='poppointcloud') {
+        ret_array.push([l_key, "",const_layer_jsons[l_key].path]);
     }
+    
   }
+
   return ret_array;
 }
 
-etc_2_tiles = {}
-geojson_data = {}
+let etc_2_tiles = {}
+
+
+/**
+ * layer_confで定義した情報におけるレイヤを作成する
+ */
 async function make_layers() {
-  console.log("----------make_layers")
+  console.log("----------make_layers start")
+
+  // 人口などのレイヤ
   addPopulationLayer();
+
   fflag = 0;
   if (layers_info == null){
     layers_info = await get_layer_info();
@@ -254,11 +333,15 @@ async function make_layers() {
     fflag = 1;
   }
 
+  // 各レイヤを追加
   for(m_info of layers_info){
     const source_id = m_info[0];
     const path = m_info[2];
 
     try{
+
+      // **********************************************
+      // ソースを追加
       if (path == "vectortile") {
         wgapp.map.addSource(source_id, {
           type: "vector",
@@ -277,37 +360,48 @@ async function make_layers() {
           tiles: [etc_2_tile],
         })
       } else if (path == "geojson") {
-      	wgapp.map.addSource(source_id, {
-          type: "geojson",
-          data: geojson_data[source_id],
-        })
+        // dataもセットする
+        if(geojson_data[source_id] != undefined){
+          wgapp.map.addSource(source_id, {
+            type: "geojson",
+            data: geojson_data[source_id],
+          })
+        }else{
+          wgapp.map.addSource(source_id, {
+            type: "geojson",
+            data: "",
+          })
+        }
       }  else if (path == "geojson2") {
-        wgapp.map.addSource(source_id, {
-          type: "geojson",
-          data: m_info[1].sources[source_id].data,
-        })
+        // jsonに記載されている内容をそのまま登録
+        // 軌跡のgradientについては、@see https://docs.mapbox.com/mapbox-gl-js/example/line-gradient/
+        // console.log("m_info[1].sources", m_info[1].sources[source_id])
+        wgapp.map.addSource(source_id, m_info[1].sources[source_id])
       }
     } catch(err) {
       console.log(err);
     }
 
+    // **********************************************
+    // 選択されているレイヤを再追加
+
     const menu_box = document.getElementById("menu-box" + source_id);       
 
-    if (layer_jsons[source_id]["type"] == "pointcloud") {
+    if (const_layer_jsons[source_id]["type"] == "pointcloud") {
       if (source_id in url_select_layerids){
         if (wgapp.map.getLayer(layerId)) {
           wgapp.map.removeLayer(layerId);
         }
         addPointCloudLayer(wgapp.map, 'point_cloud', './data/sample.csv');
       }
-    } else if(layer_jsons[source_id]["type"] == "polygoncloud") {
+    } else if(const_layer_jsons[source_id]["type"] == "polygoncloud") {
       if (source_id in url_select_layerids){
         if (wgapp.map.getLayer(layerId)) {
           wgapp.map.removeLayer(layerId);
         }
         addPlaneGroupLayer(wgapp.map, 'polygon_cloud', './data/sample.json');
       }
-    } else if(layer_jsons[source_id]["type"] == "poppointcloud") {
+    } else if(const_layer_jsons[source_id]["type"] == "poppointcloud") {
       // const layers = layer_jsons[source_id]["layer"];
       // for(layer of layers){
       //   if (menu_box != null){
@@ -335,27 +429,30 @@ async function make_layers() {
           if (layer.id == "background") {
 	        	continue;
           }
-	        if (fflag == 0) {
-            layer.id = source_id + '_' + layer.id;
-          }
-	        layer_jsons[source_id]["layer"].push(layer.id);
-          layer.source = source_id;
-          wgapp.map.addLayer(layer)
-  
-          if (menu_box != null){
-            if(menu_box.style == "display: flex;" || menu_box.style.cssText == "display: flex;"){
-              // 選択済みの場合
-              wgapp.map.setLayoutProperty(layer.id, 'visibility', 'visible');
-            }else{
-              wgapp.map.setLayoutProperty(layer.id, 'visibility', 'none');
+
+          if (wgapp.map.getSource(source_id)) {
+            if (fflag == 0) {
+              layer.id = source_id + '_' + layer.id;
             }
-  
-          }else{
-            if (source_id in url_select_layerids){
-              // URLパラメータでレイヤ表示対象であればvisible
-              wgapp.map.setLayoutProperty(layer.id, 'visibility', 'visible');
+            const_layer_jsons[source_id]["layer"].push(layer.id);
+            layer.source = source_id;
+            wgapp.map.addLayer(layer)
+
+            if (menu_box != null){
+              if(menu_box.style == "display: flex;" || menu_box.style.cssText == "display: flex;"){
+                // 選択済みの場合
+                wgapp.map.setLayoutProperty(layer.id, 'visibility', 'visible');
+              }else{
+                wgapp.map.setLayoutProperty(layer.id, 'visibility', 'none');
+              }
+    
             }else{
-              wgapp.map.setLayoutProperty(layer.id, 'visibility', 'none');
+              if (source_id in url_select_layerids){
+                // URLパラメータでレイヤ表示対象であればvisible
+                wgapp.map.setLayoutProperty(layer.id, 'visibility', 'visible');
+              }else{
+                wgapp.map.setLayoutProperty(layer.id, 'visibility', 'none');
+              }
             }
           }
         }
@@ -378,6 +475,8 @@ async function make_layers() {
     }
   }
 
+  console.log("----------make_layers end")
+
 }
 
 /**
@@ -386,13 +485,12 @@ async function make_layers() {
   * 
   * mapがidle状態になる前に実行
 */
-// let sourcr_type_list = {}
 wgapp.map.on('idle', () => {
   console.log("####idle start");
   // Layer単位で生成
-  for(key in layer_jsons){
-    _info = layer_jsons[key]
-    const id = key;
+  for(let const_key in const_layer_jsons){
+    _info = const_layer_jsons[const_key]
+    const id = const_key;
     // すでに作成されていればすべてスキップ
     if (document.getElementById(id)) {
       // continue;
@@ -408,7 +506,7 @@ wgapp.map.on('idle', () => {
     range_slider.step='1';
     range_slider.type  = "range";
     range_slider.layerType = _info.type;
-    range_slider.className = 'slider-range'; 
+    range_slider.className = 'slider-range';
 
     if (id in url_select_layerids){
       range_slider.value =  Number(url_select_layerids[id]["opacity"]) * 10 // メニュー値の設定だけ
@@ -423,6 +521,8 @@ wgapp.map.on('idle', () => {
     }else{
       p_label.textContent = id;
     }
+    // スライダーを有効にするためラベルは無効
+    p_label.style="pointer-events: none;";
 
     const col_right = document.createElement("div");
     col_right.className = "col-right";
@@ -495,11 +595,11 @@ wgapp.map.on('idle', () => {
 
   url_select_layerids = {} // パラメータを使用したのでクリア
 
-  for (k in group_list) {
+  for (let k in group_list) {
     data_select_box = document.createElement('div');
     data_select_box.className = 'data_select_box';
 
-    for (d of group_list[k]) {
+    for (let d of group_list[k]) {
       data_select_box.appendChild(d);
     }
     // console.log("data_select_box firstChild", data_select_box.firstChild)
@@ -531,19 +631,19 @@ wgapp.map.on('idle', () => {
        console.log('非表示から dblclick', selectClicking);
       if (selectClicking == false) {
         selectClicking = true;
-        const id = this.id.replace("menu-box2","");
-        const menu_box = document.getElementById("menu-box" + id);
+        const source_id = this.id.replace("menu-box2","");
+        const menu_box = document.getElementById("menu-box" + source_id);
         // 表示
-        if (id == "point_cloud") {
+        if (source_id == "point_cloud") {
           addPointCloudLayer(wgapp.map, 'point_cloud', './data/sample.csv');
           menu_box.style="display: flex;";
           this.style="display: none;";
-        } else if (id == "pplygon_cloud") {
+        } else if (source_id == "pplygon_cloud") {
             addPointCloudLayer(wgapp.map, 'pplygon_cloud', './data/sample.json');
             menu_box.style="display: flex;";
             this.style="display: none;";
-        } else {		
-            for (l of layer_jsons[id]["layer"]) {
+        } else {
+            for (let l of const_layer_jsons[source_id]["layer"]) {
               wgapp.map.setLayoutProperty(l, 'visibility', 'visible');
               menu_box.style="display: flex;";
               this.style="display: none;";
@@ -551,10 +651,74 @@ wgapp.map.on('idle', () => {
               const legend = document.getElementById('lg_' + l);
               if(legend){
                   legend.className = 'legend';
-              }    
+              }
+
+              // テキストレイヤも
+              const l2 = l.replace("_L1", "_L2");
+              if (wgapp.map.getLayer(l2)) {
+                wgapp.map.setLayoutProperty(l2, 'visibility', 'visible');
+              }
             }
 
-            if(id == "bargraph_source"){
+            if (source_id == self_prepro_source_ids[0] || source_id == self_prepro_source_ids[1] || source_id == self_prepro_source_ids[2]){
+              // 前処理データ関連の場合
+              $("#prepro_controller").removeClass("hidden");
+              // $('#view_type').children().remove(); // いったんすべて削除
+
+              // 移前処理の場合、透過性を1(100%)にする
+              if(source_id != self_prepro_source_ids[2]){
+                setOpacity(source_id, 1.0);
+                const rangeSlider = document.getElementById(source_id);
+                rangeSlider.value = 10;
+              }else{
+                // 軌跡は別
+                setOpacity(source_id, 0.3);
+                const rangeSlider = document.getElementById(source_id);
+                rangeSlider.value = 3;
+              }
+
+              // source_idが異なった場合（初回表示）
+              if (source_id != $("#prepro_db_data_type").val()){
+                // ファイル名と大きさ、選択肢を初期化
+                let result_inner = document.getElementById('prepro_file_name');
+                result_inner.innerHTML = "Geojsonアップロード(復元)";
+                let fileinput = document.getElementById('prepro_fileinput');
+                fileinput.value = "";                
+                $('#feature_size').val(1.0);
+
+                // カラムリスト作成など
+                $('#col_name').children().remove(); // いったんすべて削除
+                if (source_id == self_prepro_source_ids[0] ){
+                  // アメダス
+                  $('#col_name').append($('<option value="precipitation24h">24時間降雨量</option>'));
+                  $('#col_name').append($('<option value="temp">気温</option>'));
+                  $('#col_name').append($('<option value="snow">積雪深</option>'));
+  
+                  // 通常アメダスデータの取得はしない
+                  amedass_flg = 1;
+  
+                }else{
+                  // 移動体
+                  $('#col_name').append($('<option value="speed">速度</option>'));
+                  $('#col_name').append($('<option value="pm25">PM2.5</option>'));
+
+                  // 移動体のいずれかのデータがなければ移動する
+                  if (geojson_data[self_prepro_source_ids[1]] == undefined && geojson_data[self_prepro_source_ids[2]] == undefined){
+                    wgapp.map.flyTo({
+                      center: [137.07078, 35.131889],
+                    });
+                  }
+                  
+                }
+
+              }
+
+              // データタイプ(レイヤソースID)指定
+              $("#prepro_db_data_type").val(source_id);
+
+            }
+    
+            if(source_id == "bargraph_source"){
               $("#bargraph_controller").removeClass("hidden");
             }
 
@@ -573,19 +737,19 @@ wgapp.map.on('idle', () => {
     $('.data_select_box .ctrl_enabled').dblclick(function () {
 
       selectClicking = false;
-      const id = this.id.replace("menu-box","");
-      console.log('表示から dblclick', id);
+      const source_id = this.id.replace("menu-box","");
+      console.log('表示から dblclick', source_id);
 
-      const menu_box2 = document.getElementById("menu-box2" + id);                      
+      const menu_box2 = document.getElementById("menu-box2" + source_id);                      
       // 非表示
-      if ((id == "point_cloud") || (id == "polygon_cloud")) {
-        if (wgapp.map.getLayer(id)) {
-          wgapp.map.removeLayer(id);
+      if ((source_id == "point_cloud") || (source_id == "polygon_cloud")) {
+        if (wgapp.map.getLayer(source_id)) {
+          wgapp.map.removeLayer(source_id);
         }
         this.style="display: none;";
         menu_box2.style="display: flex;";
       } else {
-        for (l of layer_jsons[id]["layer"]) {
+        for (let l of const_layer_jsons[source_id]["layer"]) {
           wgapp.map.setLayoutProperty(l, 'visibility', 'none');
           this.style="display: none;";
           menu_box2.style="display: flex;";
@@ -594,9 +758,22 @@ wgapp.map.on('idle', () => {
           if(legend){
             legend.className = 'legend-disable';
           }
+
+          // テキストレイヤも
+          const l2 = l.replace("_L1", "_L2");
+          if (wgapp.map.getLayer(l2)) {
+            wgapp.map.setLayoutProperty(l2, 'visibility', 'none');
+          }
+
 	      }
 
-        if(id == "bargraph_source"){
+        if (source_id == self_prepro_source_ids[0] || source_id == self_prepro_source_ids[1] || source_id == self_prepro_source_ids[2]){
+          // 前処理データ関連の場合
+          // 非表示
+          $("#prepro_controller").addClass("hidden");
+        }
+
+        if(source_id == "bargraph_source"){
           $("#bargraph_controller").addClass("hidden");
         }
 
@@ -608,6 +785,7 @@ wgapp.map.on('idle', () => {
     * スライダー変動による透明度の変更
     ***********************************************************/
      $('.data_select_box .ctrl_enabled').mouseup(function () {
+      console.log("mouseup");
       const id = this.id.replace("menu-box","");
       const rangeSlider = document.getElementById(id);
       try{
@@ -621,57 +799,93 @@ wgapp.map.on('idle', () => {
   });
 });
 
+
+/***********************************************************
+* 地図移動後のイベントハンドル
+***********************************************************/
 wgapp.map.on('moveend', () => {
+  console.log("### moveend")
+
   readGeoJSON();
+
+  // 前処理データも再描画（ズームで地物の大きさも変更するため常時必要）
+  updatePreproJsonLayer(formatDate(g_current_p, 'YYYYMMDDhhmmss'), true);
+
 });
 
-function layer_update(fileName,current_p) {
+
+/***********************************************************
+* 現在時刻のデータにレイヤを更新
+* @param fileName : fileName 画面キャプチャファイル名
+* @param current_p : 現在時刻
+***********************************************************/
+function layer_update(fileName, current_p) {
   console.log("<><><> layer_update start");
   g_current_p = current_p;
   readGeoJSON();
 
-  // readGeoJSONでset済み
-  // if (getLayerIds().includes("layer_jinryu")) {
-  //   setGeojsonLayerSource("layer_jinryu_L1","layer_jinryu");
-  // }
-  // if (getLayerIds().includes("layer_amedas")) {
-  //   setGeojsonLayerSource("layer_amedas_L1","layer_amedas");
-  // }
   let selectedLayerIds = getLayerIds();
+
   // URLから選択された場合を考慮（まだLayerは生成されていない）
   if(selectedLayerIds == null){
     selectedLayerIds = Object.keys(url_select_layerids);
   }
 
-  // etc_2_tiles
-  for (key in etc_2_tiles) {
-      tile = get_etc_2_tile(key);
-      for (l of layer_jsons[key]["layer"]) {
-        if (selectedLayerIds != null && selectedLayerIds.includes(key)) {
-          setLayerSource(l,layer_jsons[key]["type"],key,tile);
+  if (selectedLayerIds != null){
+    // etc_2_tiles
+    for (let key in etc_2_tiles) {
+        tile = get_etc_2_tile(key);
+        for (let l of const_layer_jsons[key]["layer"]) {
+          if ( selectedLayerIds.includes(key)) {
+            setLayerSource(l,const_layer_jsons[key]["type"],key,tile);
+          }
         }
+    }
+
+    // 点群
+    if (selectedLayerIds.includes("point_cloud")) {
+      updateBargraph();
+    }
+    // 面群
+    if (selectedLayerIds.includes("polygon_cloud")) {
+      updatePlaneGroupLayer();
+    }
+    // 人口
+    if (selectedLayerIds.includes("bargraph_source")) {
+      updatePopulationLayer();
+      // 設定も表示
+      $("#bargraph_controller").removeClass("hidden");
+    }
+
+    // アメダスデータ or 移動体データ
+    if (selectedLayerIds.includes(self_prepro_source_ids[0]) || selectedLayerIds.includes(self_prepro_source_ids[1]) || selectedLayerIds.includes(self_prepro_source_ids[2])) {
+      if ($("#start_date").val() == ""){
+
+        // 初期（開始日時、終了日時を設定）
+        const date1 = new Date(g_current_p.getTime());
+        const start_time= formatDate(new Date(date1.setHours(date1.getHours() - 12)), 'YYYY-MM-DDThh:mm');
+        const end_time = formatDate(g_current_p, 'YYYY-MM-DDThh:mm');
+        $("#start_date").val(start_time);
+        $("#end_date").val(end_time);
+
+      }else{
+        // 該当日時にデータ更新
+        updatePreproJsonLayer(formatDate(g_current_p, 'YYYYMMDDhhmmss'), false)
       }
+    }
   }
 
-  // 点群
-  if (selectedLayerIds != null && selectedLayerIds.includes("point_cloud")) {
-    updateBargraph();
-  }
-  // 面群
-  if (selectedLayerIds != null && selectedLayerIds.includes("polygon_cloud")) {
-    updatePlaneGroupLayer();
-  }
-  // 人口
-  if (selectedLayerIds != null && selectedLayerIds.includes("bargraph_source")) {
-    updatePopulationLayer();
-    // 設定も表示
-    $("#bargraph_controller").removeClass("hidden");
-  }
+  // MF-JSON
+  updateMfJsonLayer(g_current_p.getTime(), false)
+
   // 画面キャプチャ実行
   if(fileName != undefined && fileName != ""){
     getMapCapture2(fileName)
   }
+
+  // 凡例生成
   updateLegend();
+
   console.log("<><><> layer_update end")
 
 }
@@ -705,76 +919,57 @@ function setLayerSource (layerId, ltype, sourceLayer,tile) {
     }else{
       setOpacity(sourceLayer, rangeSlider.value/10)
     }
-
-
     console.log("setLayerSource end");
   }
 
-function setGeojsonLayerSource (layerId,sourceLayer) {
-    const oldLayers = wgapp.map.getStyle().layers;
-    const layerIndex = oldLayers.findIndex(l => l.id === layerId);
-    const layerDef = oldLayers[layerIndex];
-    const before = oldLayers[layerIndex + 1] && oldLayers[layerIndex + 1].id;
+  /**
+   * 指定したidのレイヤを再度追加する
+   * ※いったん追加されていることが前提
+   * @param {*} layer_id 
+   * @param {*} source_id 
+   */
+function setGeojsonLayerSource (layer_id, source_id) {
+    console.log("setGeojsonLayerSource start")
+
+    // 追加するレイヤのスタイルを取得
+    const _layers = wgapp.map.getStyle().layers;
+    const layerIndex = _layers.findIndex(l => l.id === layer_id);
+    const layerDef = _layers[layerIndex];
+
+    // 追加するレイヤの位置を設定するためのid
+    const before_layerid = _layers[layerIndex + 1] && _layers[layerIndex + 1].id;
 
     try{
-      wgapp.map.removeLayer(layerId);
-      wgapp.map.removeSource( sourceLayer );
+      
+      // 常時いったん削除してから追加
+      if (wgapp.map.getSource(source_id)) {
+        if (wgapp.map.getLayer(layer_id)) {
+          wgapp.map.removeLayer(layer_id);
+        }
+        if (wgapp.map.getLayer(source_id + "_L2")) {
+          wgapp.map.removeLayer(source_id + "_L2");
+        }
+        wgapp.map.removeSource( source_id );
+      }
+
       wgapp.map.addSource(
-        sourceLayer, {
+        source_id, {
           type : "geojson",
-          data : geojson_data[sourceLayer]
+          data : geojson_data[source_id]
         }
       );
-      wgapp.map.addLayer(layerDef, before);
+
+      if(layerDef != null){
+          wgapp.map.addLayer(layerDef, before_layerid);
+      }
+
     } catch(err) {
       console.log(err);
     }
+
+    console.log("setGeojsonLayerSource end")
 }
 
-
-/**
- * アメダスデータのレイヤ追加
- */
-function setAmedasLayerSource() {
-  let data = {
-    "type": "FeatureCollection",
-    "features": []
-  };
-  let radius_size = 10;
-  bargraph_data = geojson_data["layer_amedas"];
-
-  bargraph_data.features.forEach(function (object, i) {
-    const point = object.geometry.coordinates
-    let xy = wgapp.map.project(point);
-    xy.x += radius_size;
-    let lnglat = wgapp.map.unproject(xy);
-    lnglat = turf.point([lnglat.lng, lnglat.lat]);
-    const radius = turf.distance(point, lnglat, {
-      units: 'meters'
-    }) + 0.00000001;
-    if ((object.properties.precipitation24h == "") || (object.properties.precipitation24h == 0)) {
-        object.properties.height = 1;
-    } else {
-        object.properties.height = object.properties.precipitation24h * 100;
-    }
-    object.properties.base = 0;
-    object.properties.index = i;
-
-    const options = {
-      steps: 16,
-      units: 'meters',
-      properties: object.properties
-    };
-
-    const feature = turf.circle(point, radius, options);
-    feature.id = i;
-    data.features.push(feature);
-  })
-  geojson_data["layer_amedas"] =  data;
-
-  // 別途呼び出し済み
-  // setGeojsonLayerSource("layer_amedas_L1","layer_amedas");
-}
 
 function get_etc_2_tile(source_id) {
     let selected_yyyymmdd = formatDate(g_current_p, 'YYYYMMDD');
@@ -1075,7 +1270,7 @@ function addPopulationLayer(){
       // let hoveredStateId = null;
       const menu_box = document.getElementById("menu-box" + source_id);
       bargraphlayers = ["extrusion_population","extrusion_households","extrusion_housing"];
-      for (id of bargraphlayers) {
+      for (let id of bargraphlayers) {
         // visibleの設定も個別でここで実施
         if (menu_box != null){
           if(menu_box.style == "display: flex;" || menu_box.style.cssText == "display: flex;"){
@@ -1215,7 +1410,7 @@ function getBaseMapInfo(){
 // layerIds : レイヤIDと透明度（:区切り）の配列
 function setLayerVisible(layerIds){
   url_select_layerids = {} // 初期化
-  for (layer of layerIds){
+  for (let layer of layerIds){
     // url_select_layerids.push(layerId)
     const key = layer.split(":")[0];
     const value = layer.split(":")[1];
@@ -1234,6 +1429,7 @@ function getLayerIds(){
   for(m_info of layers_info){
     const source_id = m_info[0];
     const menu_box = document.getElementById("menu-box" + source_id);
+
     if(menu_box.style == "display: flex;" || menu_box.style.cssText == "display: flex;"){
       // 選択済みの場合
       ret_ids.push(source_id);
@@ -1316,6 +1512,11 @@ function stopMapCapture(){
 }
 
 function formatDate (date, format) {
+
+    if (typeof date === "number"){
+      return date;
+    }
+
     var weekday = ["日", "月", "火", "水", "木", "金", "土"];
     if (!format) {
         format = 'YYYY/MM/DD(WW) hh:mm:ss'
@@ -1327,6 +1528,7 @@ function formatDate (date, format) {
     format = format.replace(/hh/g, ('0' + date.getHours()).slice(-2));
     format = format.replace(/mm/g, ('0' + date.getMinutes()).slice(-2));
     format = format.replace(/ss/g, ('0' + date.getSeconds()).slice(-2));
+
     return format;
 }
 
@@ -1345,7 +1547,12 @@ function formatDateUTC (date, format) {
     return format;
 }
 
+/**
+ * 凡例を作成・更新
+ */
 function updateLegend() {
+    console.log("updateLegend")
+
     $("#legend").empty();
     let selectedLayerIds = getLayerIds();
 
@@ -1433,21 +1640,167 @@ function updateLegend() {
       $("#jinryu_legend").addClass("jinryu_legend");
     }
 
+    // アメダス
+    if (selectedLayerIds != null && selectedLayerIds.includes(self_prepro_source_ids[0])) {
 
+      const _layers = wgapp.map.getStyle().layers;
+      const layerIndex = _layers.findIndex(l => l.id === self_prepro_source_ids[0] + "_L1");
+      const layerDef = _layers[layerIndex];
+
+      let $legend = '';
+      let _colors = null;
+      let _length = null;
+
+      if(layerDef["paint"] != undefined){
+        if (layerDef["paint"]["fill-extrusion-color"] != undefined){
+          // ３Dグラフのもの
+          _colors = layerDef["paint"]["fill-extrusion-color"];
+          _length = _colors.length;
+  
+          const col_name = layerDef["paint"]["fill-extrusion-color"][1][1];
+  
+          if(col_name.indexOf("wind") >= 0){
+            // 風速
+            $legend += '<div class="amedas_legend_short">';
+            $legend += '<span>m/s</span>';
+          }else if(col_name.indexOf("snow") >= 0){
+            // 積雪深
+            $legend += '<div class="amedas_legend">';
+            $legend += '<span>cm</span>';
+          }else {
+            // 雨量
+            $legend += '<div class="amedas_legend">';
+            $legend += '<span>mm</span>';
+          }
+        }else if (layerDef["paint"]["circle-color"] != undefined){
+          // 平面の円のもの
+          $legend += '<div class="amedas_legend_long">';
+          _colors = layerDef["paint"]["circle-color"];
+          _length = _colors.length;
+  
+          if(layerDef["paint"]["circle-color"][1][1].indexOf("temp") >= 0){
+            // 気温
+            $legend += '<span>℃</span>';
+  
+          }
+        }
+      }
+
+      // 設定済みのレイヤ情報から凡例情報を取得
+      $legend += '<div><span style="background-color: ' + _colors[_length-1] + ';"></span></div>';
+      for(let i=_length-3; i>=2; i=i-2){ // i=0,1は別
+        $legend += '<div><span style="background-color: ' + _colors[i] + ';"></span>' + _colors[i+1] + '</div>';
+      }
+
+      $legend += '</div>';
+
+      $("#legend").append($legend);
+    }
+
+    // ごみ収集車（通常）
+    if (selectedLayerIds != null && selectedLayerIds.includes(self_prepro_source_ids[1])) {
+      let $legend = '';
+      // 車体(L1から)
+      const _layers = wgapp.map.getStyle().layers;
+      const layerIndex = _layers.findIndex(l => l.id === self_prepro_source_ids[1] + "_L1");
+      const layerDef = _layers[layerIndex];
+
+      const _colors = layerDef["paint"]["fill-extrusion-color"];
+      const _length = _colors.length;
+      $legend += '<div class="garbage_legend_truck">';
+      $legend += '<span>車体</span>';
+      // 設定済みのレイヤ情報から凡例情報を取得
+      for(let i=2; i<=_length-2; i=i+2){ // i=0,1は別
+        $legend += '<div><span style="background-color: ' + _colors[i+1] + ';"></span>_' + _colors[i] + '</div>';
+      }
+      $legend += '</div>';
+      $("#legend").append($legend);
+
+      // 数値(L3から)
+      const layerIndex_3 = _layers.findIndex(l => l.id === self_prepro_source_ids[1] + "_L3");
+      if(layerIndex_3 >= 0){
+        const layerDef_3 = _layers[layerIndex_3];
+
+        const _colors_3 = layerDef_3["paint"]["text-color"];
+        const _length_3 = _colors_3.length;
+  
+        const col_name = $("#col_name").val();
+
+        let $legend2 = '';
+        $legend2 += '<div class="garbage_legend">';
+        if(col_name == "speed"){
+          $legend2 += '<span>km/h</span>';
+        }else if(col_name == "pm25"){
+          $legend2 += '<span></span>';
+        }else{
+          $legend2 += '<span></span>';
+        }
+        $legend2 += '<div><span style="background-color: ' + _colors_3[_length_3-1] + ';"></span></div>';
+        for(let i=_length_3-3; i>=2; i=i-2){ // i=0,1は別
+          $legend2 += '<div><span style="background-color: ' + _colors_3[i] + ';"></span>' + _colors_3[i+1] + '</div>';
+        }
+  
+        $legend2 += '</div>';
+  
+        $("#legend").append($legend2);
+      }
+    }
+
+    // ごみ収集車（軌跡）
+    else if (selectedLayerIds != null && selectedLayerIds.includes(self_prepro_source_ids[2])) {
+      let $legend = '';
+      const _layers = wgapp.map.getStyle().layers;
+      const layerIndex = _layers.findIndex(l => l.id === self_prepro_source_ids[2] + "_L1");
+      const layerDef = _layers[layerIndex];
+      const _colors = layerDef["paint"]["line-color"];
+      const _length = _colors.length;
+      // 車体
+      $legend += '<div class="garbage_legend_truck">';
+      $legend += '<span>車体</span>';
+      // 設定済みのレイヤ情報から凡例情報を取得
+      for(let i=2; i<=_length-2; i=i+2){ // i=0,1は別
+        $legend += '<div><span style="background-color: ' + _colors[i+1] + ';"></span>_' + _colors[i] + '</div>';
+      }
+      $legend += '</div>';
+      $("#legend").append($legend);
+
+      // 数値(L3から)
+      const layerIndex_3 = _layers.findIndex(l => l.id === self_prepro_source_ids[1] + "_L3");
+      if(layerIndex_3 >= 0){
+        const layerDef_3 = _layers[layerIndex_3];
+
+        const _colors_3 = layerDef_3["paint"]["text-color"];
+        const _length_3 = _colors_3.length;
+  
+        let $legend2 = '';
+        $legend2 += '<div class="garbage_legend">';
+        $legend2 += '<span>km/h</span>';
+        $legend2 += '<div><span style="background-color: ' + _colors_3[_length_3-1] + ';"></span></div>';
+        for(let i=_length_3-3; i>=2; i=i-2){ // i=0,1は別
+          $legend2 += '<div><span style="background-color: ' + _colors_3[i] + ';"></span>' + _colors_3[i+1] + '</div>';
+        }
+  
+        $legend2 += '</div>';
+  
+        $("#legend").append($legend2);
+      }
+
+    }
   }
 
+  
 /**
  * 透過性を設定する共通関数
  * @param id    : レイヤID
  * @param value : 0-1(0から１までの小数点)
  */
 function setOpacity(id, value){
-  if(layer_jsons[id].type != "raster"){
-    for (l of layer_jsons[id]["layer"]) {
+  if(const_layer_jsons[id].type != "raster"){
+    for (let l of const_layer_jsons[id]["layer"]) {
       setVectorPaintPropOpacity(l, value);
     }
-  }else if(layer_jsons[id].type == "raster"){
-    for (l of layer_jsons[id]["layer"]) {
+  }else if(const_layer_jsons[id].type == "raster"){
+    for (let l of const_layer_jsons[id]["layer"]) {
       wgapp.map.setPaintProperty(l, "raster-opacity", value );
     }
   }
@@ -1460,6 +1813,11 @@ function setOpacity(id, value){
  */
  function setVectorPaintPropOpacity(layer, opacity){
   if(isNaN(opacity)){
+    return;
+  }
+
+  if(layer == self_prepro_source_ids[2] + "_L2" || layer == self_prepro_source_ids[2] + "_L3"){
+    // 軌跡の円とラベルは除外する
     return;
   }
 
@@ -1478,3 +1836,5 @@ function setOpacity(id, value){
     wgapp.map.setPaintProperty(layer, "fill-extrusion-opacity", opacity );
   }
 }
+
+

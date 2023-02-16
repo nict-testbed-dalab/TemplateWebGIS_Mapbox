@@ -10,26 +10,25 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 
-    <script type="text/javascript" src="./timeline/1.8.0/jquery-k2go-timeline.js"></script>
+    <script type="text/javascript" src="./timeline/1.8.0/jquery-k2go-timeline.js?date=20221205_17"></script>
     <script type="text/javascript" src="js/lib/picker.js?date=20220216_1"></script>
     <script type="text/javascript" src="js/lib/picker.date.js?date=20220216_1"></script>
     <script type="text/javascript" src="js/lib/picker.date.lang.js"></script>
 
     <script type="text/javascript" src="js/env.js?date=20220224_1"></script>
     <script type="text/javascript" src="js/fnc.js?date=20220224_1"></script>
-    <script type="text/javascript" src="js/main.js?date=20220224_3"></script>
+    <script type="text/javascript" src="js/main.js?date=20221226_01"></script>
     <script type="text/javascript" src="js/STARScontroller.js"></script>
 
     <link type="text/css" href="./timeline/1.8.0/jquery-k2go-timeline.css" rel="stylesheet" />
     <link type="text/css" href="css/index.css" rel="stylesheet" />
     <link type="text/css" href="css/iframe.css" rel="stylesheet" />
-    <link type="text/css" href="css/style.css?date=20220215_1" rel="stylesheet" />
+    <link type="text/css" href="css/style.css?date=20221215_1" rel="stylesheet" />
     <link type="text/css" href="css/play_box.css?date=20220209_6" rel="stylesheet" />
     <link type="text/css" href="css/default.css?date=20220214_9" rel="stylesheet" />
     <link type="text/css" href="css/default.date.css?date=20220216_2" rel="stylesheet" />
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
   </head>
 
   <body>
@@ -41,8 +40,8 @@
             <button
               class="navbar-toggler"
               type="button"
-              data-toggle="collapse"
-              data-target="#navbarNav"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarNav"
               aria-controls="navbarNav"
               aria-expanded="false"
               aria-label="Toggle navigation"
@@ -56,6 +55,7 @@
                   <a href="/" class="nav-link route-link">Home</a>
                 </li>
               </ul>
+              
               <ul class="navbar-nav d-none d-md-block">
                 <!-- Login button: show if NOT authenticated -->
                 <li class="nav-item auth-invisible">
@@ -75,7 +75,7 @@
                     class="nav-link dropdown-toggle"
                     href="#"
                     id="profileDropDown"
-                    data-toggle="dropdown"
+                    data-bs-toggle="dropdown"
                   >
                     <!-- Profile image should be set to the profile picture from the id token -->
                     <img
@@ -84,15 +84,9 @@
                       width="35"
                     />
                   </a>
-                  <div class="dropdown-menu">
+                  <div class="dropdown-menu"  aria-labelledby="profileDropDown">
                     <!-- Show the user's full name from the id token here -->
                     <div class="dropdown-header nav-user-name user-name"></div>
-                    <!-- <a
-                      href="/profile"
-                      class="dropdown-item dropdown-profile route-link"
-                    >
-                      <i class="fas fa-user mr-3"></i> Profile
-                    </a> -->
                     <a
                       href="#"
                       class="dropdown-item"
@@ -114,7 +108,7 @@
 
     <div id="main">
       <div id="content">
-        <iframe src="./Mapbox_map/index.html?date=20220314_4" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="map"></iframe>
+        <iframe src="./Mapbox_map/index.html?date=20230201_1" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="map"></iframe>
       </div>
     </div>
     
@@ -141,7 +135,7 @@
        
       </div>
 
-      <div id="panel-conf" class="ui-draggable ui-draggable-handle active">
+      <div id="panel-conf" class="active">
     
         <div id="panel-conf-header">
           <span>再生設定</span>
@@ -250,10 +244,10 @@
     </div>
     <div id="lockWindow"></div>
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
     <script src="js/ui.js?date=20220301_1"></script> 
-    <script src="js/app.js?date=20220301_1"></script>
+    <script src="js/app.js?date=20221122_1"></script>
 
   </body>
 </html>

@@ -134,8 +134,8 @@ async function make_geojson_layers(geojson) {
             data: geojson,
         });
         
-        const layers = layer_jsons[source_jsons[0].id];
-        for(addLayer of layers){
+        const layers = const_layer_jsons[source_jsons[0].id];
+        for(let addLayer of layers){
             wgapp.map.addLayer(addLayer);          
         }
 
@@ -144,7 +144,7 @@ async function make_geojson_layers(geojson) {
         // TODO 中心の座標を取得して新たなgeojsonを生成する
         // 本実装ではDBや別のgeojsonに市区町村のメタ情報と中心座標を保持するかもしれない。
         const features = [];
-        for(polygon of geojson['features']){
+        for(let polygon of geojson['features']){
             const center = turf.centroid(polygon);
             center.properties = polygon.properties;
             features.push(center);
@@ -157,30 +157,30 @@ async function make_geojson_layers(geojson) {
                 "features": features
             },
         });
-        const layers2 = layer_jsons[source_jsons[1].id];
-        for(addLayer of layers2){
+        const layers2 = const_layer_jsons[source_jsons[1].id];
+        for(let addLayer of layers2){
             wgapp.map.addLayer(addLayer);          
         }
 
         // *******************************************************
         // レイアウト表示処理(再描画も考慮)
-        for(source of source_jsons){
+        for(let source of source_jsons){
             const menu_box = document.getElementById("menu-box" + source.id);
-            const layers = layer_jsons[source.id];
+            const layers = const_layer_jsons[source.id];
 
             if (menu_box != null){
                 if(menu_box.style == "display: flex;" || menu_box.style.cssText == "display: flex;"){
                     // 選択済みの場合
-                    for(layer of layers){
+                    for(let layer of layers){
                     wgapp.map.setLayoutProperty(layer.id, 'visibility', 'visible');        
                     }
                 }else{
-                    for(layer of layers){
+                    for(let layer of layers){
                         wgapp.map.setLayoutProperty(layer.id, 'visibility', 'none');        
                     }
                 }
             }else{
-                for(layer of layers){
+                for(let layer of layers){
                     wgapp.map.setLayoutProperty(layer.id, 'visibility', 'none');        
                 }
             }

@@ -10,7 +10,7 @@ const mapbox_accessToken = '';
 vectortile_data_path = "../../storage/data/vectortile/"
 etc_data_path = "./json/"
 server_url = "https://tb-gis-web.jgn-x.jp/"
-let layer_jsons = {
+const const_layer_jsons = {
     '1_a_1_1_kaigansen':{ type:'vector', path:'vectortile', group: 'ac_group1_1', name: '海岸線', layer: [] },
     '1_a_1_2_kaigan_hoan':{ type:'vector', path:'vectortile', group: 'ac_group1_1', name: '海岸保全施設', layer: [] },
     '1_a_1_3_kosyou':{type:'vector', path:'vectortile', group: 'ac_group1_1', name: '湖沼', layer: [] },
@@ -45,7 +45,7 @@ let layer_jsons = {
     'amjp':{ type:'raster', path:'etc_2', group: 'ac_group2', name: '日射量', layer: [] },
     'rmap':{ type:'raster', path:'etc_1', group: 'ac_group2', name: '水位', layer: [] },
     'h8jp':{ type:'raster', path:'etc_2', group: 'ac_group2', name: 'ひまわり', layer: [] },
-    'layer_amedas':{ type:'geojson', path:'geojson', group: 'ac_group2', name: 'アメダス', layer: [] },
+    'layer_amedas':{ type:'geojson', path:'geojson2', group: 'ac_group2', name: 'アメダス', layer: [] },
     'layer_city_boundary':{ type:'vector', path:'etc_2', group: 'ac_group4', name: '行政境界（市区町村・複数年）', layer: [] },
     'layer_town':{ type:'vector', path:'etc_2', group: 'ac_group4', name: '行政境界（町丁目・2015年固定）', layer: [] },
     'bargraph_source':{ type:'poppointcloud', path:'poppointcloud', group: 'ac_group4', name: '人口（市区町村・複数年）', layer: ["extrusion_population","extrusion_households","extrusion_housing"] },
@@ -56,7 +56,9 @@ let layer_jsons = {
     'layer_plateau_kaga':{ type:'vector', path:'etc_1', group: 'ac_group3', name: '３D都市モデル（加賀市）', layer: [] },
     'layer_plateau_kitakyusyu':{ type:'vector', path:'etc_1', group: 'ac_group3', name: '３D都市モデル（北九州）', layer: [] },
     'layer_plateau_yokosuka':{ type:'vector', path:'etc_1', group: 'ac_group3', name: '３D都市モデル（横須賀）', layer: [] },
-    'layer_jinryu':{ type:'geojson', path:'geojson', group: 'ac_group6', name: '人流（GPS）', layer: [] },
+    'layer_garbagetruck':{ type:'geojson', path:'geojson2', group: 'ac_group6', name: '移動体データ（ごみ収集車ー日進市）', layer: [] },
+    'layer_garbagetruck_trajectory':{ type:'geojson', path:'geojson2', group: 'ac_group6', name: '移動体データ軌跡（同上）', layer: [] },
+    'layer_jinryu':{ type:'geojson', path:'geojson2', group: 'ac_group6', name: '人流（GPS）', layer: [] },
     'point_cloud':{ type:'pointcloud', path:'pointcloud', group: 'ac_group6', name: '点群データ', layer: ["point_cloud"] },
     'polygon_cloud':{ type:'polygoncloud', path:'polygoncloud', group: 'ac_group6', name: '面群データ', layer: ["polygon_cloud"] },
 }

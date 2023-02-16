@@ -5,19 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mapbox</title>
 
-  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.2/mapbox-gl.js'></script>
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.2/mapbox-gl.css' rel='stylesheet'/>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.3/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.3/mapbox-gl.css' rel='stylesheet'/>
   <script src="https://unpkg.com/deck.gl@^8.1.0/dist.min.js"></script>
   <script src="https://d3js.org/d3.v7.min.js"></script>
 
   <script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
-  <script type="text/javascript" src="js/layer_conf.js"></script>
+  <script type="text/javascript" src="js/layer_conf.js?date=20230125_2"></script>
   <script type="text/javascript" src="js/controller.js?date=20220314_2"></script>
 
-  <link   type="text/css"        href="css/index.css?date=20220314_6" rel="stylesheet">
-  <link   type="text/css"        href="css/menu.css?date=20211201_25" rel="stylesheet">
-  <link   type="text/css"        href="css/side-menu.css?date=20211201_25" rel="stylesheet">
-  <link   type="text/css"        href="css/legend.css?date=20220228_1" rel="stylesheet">
+  <link   type="text/css"        href="css/index.css?date=20221209_2" rel="stylesheet">
+  <link   type="text/css"        href="css/file_upload.css?date=20230201_1" rel="stylesheet">
+
+  <link   type="text/css"        href="css/menu.css?date=20221226_1" rel="stylesheet">
+  <link   type="text/css"        href="css/side-menu.css?date=20221226_1" rel="stylesheet">
+  <link   type="text/css"        href="css/legend.css?date=20221214_1" rel="stylesheet">
 
 </head>
 
@@ -25,6 +27,9 @@
   <div id="base_menu">
     <input id="base_gsi_std_vector" type="radio" name="rtoggle" value="1" >
     <label for="base_gsi_std_vector">地理院地図Vector</label>
+
+    <!-- <input id="base_gsi_pale_direct" type="radio" name="rtoggle" value="2" checked="checked">
+    <label for="base_gsi_pale_direct">＊地理院タイル（淡色地図）</label> -->
 
     <input id="base_gsi_pale" type="radio" name="rtoggle" value="2" checked="checked">
     <label for="base_gsi_pale">地理院タイル（淡色地図）</label>
@@ -68,6 +73,74 @@
   </div>
 
   <div id="map"></div>
+
+  <!-- 前処理（アメダスなど）のデータ取得 -->
+  <div id="prepro_controller"  class="hidden">
+    <input type="hidden" id="prepro_db_data_type" value=""/>
+    <div>
+      <span>取得項目　</span>
+        <select id="col_name" >
+          <!-- <option value="precipitation24h">24時間降雨量</option> -->
+        </select>
+    </div>
+    <div>
+      <span>期間(開始)</span>
+      <input type="datetime-local" id="start_date" class="cl_date"/>
+      <!-- value="2023-03-06T08:30"  -->
+      
+    </div>
+    <div>
+      <span>期間(終了)</span>
+      <input type="datetime-local" id="end_date"  class="cl_date"/>
+    </div>
+    <div>
+      <span>リサンプル</span>
+      <select id="proc_type" >
+        <option value="avg" selected>平均値</option>
+        <option value="max">最大値</option>
+        <option value="min">最小値</option>
+        <option value="spline">スプライン補間</option>
+        <option value="linear">線形補間</option>
+      </select>
+    </div>
+    <div>
+      <span>時間粒度　</span>
+      <input id="granularity_val" type="number" min="1" max="59" step="1" value="1">
+      <select id="granularity" >
+        <option value="minute">分</option>
+        <option value="hour" selected>時間</option>
+        <option value="day">日</option>
+        <option value="month">月</option>
+        <option value="year">年</option>
+      </select>
+
+    </div>
+    <div id="prepro_uploadArea" class="prepro_uploadArea">
+      <div id="prepro_upload" >
+        <label for="prepro_fileinput"><span id="prepro_file_name">Geojsonアップロード(復元)</span>
+        <input type="file" name="fileb" id="prepro_fileinput" accept=".json" onchange="fileselectPrepro(this);"/>
+        </label>
+      </div>
+    </div>
+
+    <div class="prepro_size">
+      <span>大きさ(標準比)</span>
+      <input type="number" id="feature_size"  step="0.1" value="1.0" min="0.1" max="3.0" />
+    </div>
+    <!-- <div id="prepro_trajectory" class="hidden">
+      <span>軌跡あり</span>
+      <input type="checkbox" id="trajectory_flg"  value="1"/>
+    </div> -->
+
+    <div class="prepro_btn">
+      <button id="btn_prepro_get_data" type="button" >取得・表示</button>
+      <button id="btn_prepro_download" type="button" disabled>結果DL</button>
+      <a style="display:none;" id="downloader" href="#"></a>
+      <button id="btn_prepro_close" type="button">閉じる</button>
+    </div>
+
+  </div>
+
   <div id="bargraph_controller" class="hidden">
     <div id="radius">
       <div id="label"><span>太さ(半径)</span></div>
@@ -128,6 +201,8 @@
   <div id="legend"></div>
   <div id="pop_legend" class="pop_legend"></div>
   <div id="jinryu_legend" class="jinryu_legend"></div>
+  <div id="geojson_upload" class="geojson_upload"></div>
+  <!-- <div id="amedas_legend" class="hidden"></div> -->
 
   <script type="text/javascript" src="https://unpkg.com/@turf/turf@6.3.0/turf.min.js"></script>
   <script type="text/javascript" src="https://unpkg.com/deck.gl@^8.0.0/dist.min.js"></script>
@@ -135,6 +210,9 @@
   <script type="text/javascript" src="js/DisplayCapture.js?date=20220221_9"></script>
   <script type="text/javascript" src="js/fnc.js?date=20220221_6"></script>
   <script type="text/javascript" src="js/geojson_layer.js?date=20220107_6"></script>
-  <script type="text/javascript" src="js/index.js?date=20220314_2"></script>
+  <script type="text/javascript" src="js/index.js?date=20230126_1"></script>
+  <script type="text/javascript" src="js/fileupload.js?date=20230116_3"></script>
+  <script type="text/javascript" src="js/preprocess_layer.js?date=20230116_3"></script>
+  <script type="text/javascript" src="js/moving_feature.js?date=20230126_1"></script>
 </body>
 </html>

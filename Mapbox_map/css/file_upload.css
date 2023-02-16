@@ -1,0 +1,146 @@
+.uploadArea {
+  position : fixed;
+  top : 340px;
+  left :10px;
+  /*margin: 5px;*/
+  width:220px;
+  height: 232px;
+  display:inline-block;
+  overflow:hidden;
+  /* text-align:center; */
+  /* padding: 5px 0px 5px 0px; */
+  /* border: 3px dashed grey; */
+  cursor:pointer;
+  font-size: 14px;
+  color:white;
+  background-color: rgba(52, 55, 57, 0.8);
+}
+
+.uploadArea #uploadHeader{
+  margin: 5px;
+  height: 20px;
+}
+
+.uploadArea span{
+  font-size: 12px;
+}
+
+/* ファイル選択ボタンを全枠内化*/
+.uploadArea #fileinput1 {
+  position:absolute;
+  top:33px;
+  left:20px;
+  cursor:pointer;
+  opacity:0;
+}
+
+.uploadArea #fileinput2 {
+  position:absolute;
+  top:66px;
+  left:20px;
+  cursor:pointer;
+  opacity:0;
+}
+
+.uploadArea #fileinput3 {
+  position:absolute;
+  top:101px;
+  left:20px;
+  cursor:pointer;
+  opacity:0;
+}
+
+.uploadArea #fileinput4 {
+  position:absolute;
+  top:135px;
+  left:20px;
+  cursor:pointer;
+  opacity:0;
+}
+
+.uploadArea #fileinput5 {
+  position:absolute;
+  top:170px;
+  left:20px;
+  cursor:pointer;
+  opacity:0;
+}
+
+.uploadArea #fileinput6 {
+  position:absolute;
+  top:205px;
+  left:20px;
+  cursor:pointer;
+  opacity:0;
+}
+
+.uploadList {
+  padding-top: 5px;
+  height: 27px;
+  border: 1px dashed grey;
+}
+
+
+#prepro_controller {
+  position:relative;
+  width: 265px;
+  top: 190px;
+  left: 240px;
+  height:265px;
+  margin-top: 20px;
+  color:white;
+  background-color: rgba(52, 55, 57, 0.8);
+}
+
+#prepro_controller > div {
+  position:relative;
+  height: 25px;
+}
+
+#prepro_controller > div > span{
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+#prepro_controller > div > #btn_prepro_get_data{
+  margin-top: 2px;
+  margin-left: 30px;
+}
+
+#prepro_controller > div > #btn_prepro_close{
+  margin-top: 2px;
+  margin-left: 10px;
+}
+
+.prepro_uploadArea #prepro_upload {
+  height: 37px;
+  margin-top: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+  font-size: 12px;
+  border: 1px dashed grey;
+}
+
+.prepro_size {
+  margin-top: 19px;
+}
+
+#feature_size{
+  width: 40px;
+}
+
+.prepro_btn {
+  margin-top: 12px;
+}
+
+/* ファイル選択ボタンを全枠内化*/
+.prepro_uploadArea #prepro_fileinput {
+  cursor:pointer;
+  position:relative;
+  top:-20px;
+  opacity:0.0;
+}
+
+#granularity_val{
+  width: 36px;
+}

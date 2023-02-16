@@ -1,7 +1,7 @@
 #legend {
   position : fixed;
-  top : 160px;
-  right : 5px;
+  top : 175px;
+  right : 10px;
   height : 300px;
   width : 50px;
 /*
@@ -156,4 +156,104 @@
   /* margin-left: 20px; */
   margin-right:5px;
   width: 10px;
+}
+
+
+#legend .amedas_legend {
+  height : 68%;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #FFFFFF;
+  font: 11.5px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 5px;
+  z-index: 1;
+}
+
+#legend .amedas_legend div span {
+  /* border-radius: 50%; */
+  display: inline-block;
+  height: 21px;
+  margin-bottom:-15px;
+  margin-right:5px;
+  width: 12px;
+}
+
+#legend .amedas_legend_short {
+  height : 55%;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #FFFFFF;
+  font: 11.5px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 5px;
+  z-index: 1;
+}
+
+#legend .amedas_legend_short div span {
+  /* border-radius: 50%; */
+  display: inline-block;
+  height: 21px;
+  margin-bottom:-15px;
+  margin-right:5px;
+  width: 12px;
+}
+
+
+
+#legend .amedas_legend_long {
+  height : 78%;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #FFFFFF;
+  font: 11.5px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 5px;
+  z-index: 1;
+}
+
+#legend .amedas_legend_long div span {
+  display: inline-block;
+  height: 20px;
+  margin-bottom:-14px;
+  margin-right:5px;
+  width: 12px;
+}
+
+#legend .garbage_legend_truck {
+  height : 55%;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #FFFFFF;
+  font: 11.5px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 5px;
+  z-index: 1;
+}
+
+#legend .garbage_legend_truck div span {
+  display: inline-block;
+  height: 15px;
+  margin-bottom:-3px;
+  margin-right:5px;
+  width: 12px;
+}
+
+#legend .garbage_legend {
+  height : 60%;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  color: #FFFFFF;
+  font: 11.5px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  padding: 5px;
+  z-index: 1;
+}
+
+#legend .garbage_legend div span {
+  display: inline-block;
+  height: 20px;
+  margin-bottom:-14px;
+  margin-right:5px;
+  width: 12px;
 }
