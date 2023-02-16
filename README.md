@@ -12,6 +12,7 @@ MapboxをベースとしたWebGISアプリ向けデータ可視化機能を活�
 - 国土交通省PLATEAUによる3次元建物データ
 - 行政境界データ（町丁目・市区町村・都道府県）
 - 人口情報
+- 移動体データ(MF-JSON形式)
 
 
 利用している機能は以下の通りです。
@@ -159,6 +160,7 @@ MapboxをベースとしたWebGISアプリ向けデータ可視化機能を活�
 | 気象情報 - ひまわり | /api/weather/h8jp/{yyyy}/{mm}/{dd}/{hh}/{mi}/{z}/{x}/{y} | |
 | 気象情報 - 水位 | /api/weatherrmap/{z}/{x}/{y} | |
 | 気象情報 - アメダスデータ | /api/t_amedas_data | 指定した領域、日時に該当するデータをGeoJsonで返却<BR>引数：<BR>point_1:領域の北西の経度緯度<BR>point_2:領域の北東の経度緯度<BR>point_3:領域の南東の経度緯度<BR>point_4:領域の南西の経度緯度<BR>currentDate:対象日付・時刻(YYYYMMDDHH24MI)|
+| 気象情報 - アメダスデータ(前処理あり) | /api/t_preprocessing_amedas_data | 指定した領域、期間に該当するデータに対し、時間粒度とリサンプル方法で処理したデータをJsonで返却<BR>引数：<BR>point_1:領域の北西の経度緯度<BR>point_2:領域の北東の経度緯度<BR>point_3:領域の南東の経度緯度<BR>point_4:領域の南西の経度緯度<BR>target_data：取得するデータテーブルのカラム名<BR>start_date：対象とする年月日時分<BR>end_date：対象とする年月日時分<BR>granularity：時間粒度<BR>proc_type：リサンプル方法<BR>center_point：地図の中心座標(再表示時のため)<BR>zoom_level：地図のズーム値(再表示時のため)<BR>pitch：地図の仰俯角度(再表示時のため)<BR>bearing：地図の回転角度(再表示時のため)|
 | ３D都市モデル（東京） | /api/PLATEAU/tokyo/mvt/{z}/{x}/{y} | |
 | ３D都市モデル（箱根市） | /api/PLATEAU/hakone/mvt/{z}/{x}/{y} | |
 | ３D都市モデル（加賀市） | /api/PLATEAU/kaga/mvt/{z}/{x}/{y} | |
@@ -167,6 +169,7 @@ MapboxをベースとしたWebGISアプリ向けデータ可視化機能を活�
 | 行政境界 - 市区町村境界（年数指定） | /api/jp_city/{yyyymmdd}/{z}/{x}/{y} | |
 | 人口（2015年国勢調査小地域） | /api/vector-adm/tile/town/{z}/{x}/{y} | |
 | DEM（geoserverデータ） | /api/geoserver/gwc/service/{z}/{x}/{y} | |
+| 移動体データ | /api/t_preprocessing_garbagetruck_data |指定した領域、期間に該当するデータに対し、時間粒度とリサンプル方法で処理したデータをJsonで返却<BR>引数：<BR>point_1:領域の北西の経度緯度<BR>point_2:領域の北東の経度緯度<BR>point_3:領域の南東の経度緯度<BR>point_4:領域の南西の経度緯度<BR>target_data：取得するデータテーブルのカラム名<BR>start_date：対象とする年月日時分<BR>end_date：対象とする年月日時分<BR>granularity：時間粒度<BR>proc_type：リサンプル方法<BR>center_point：地図の中心座標(再表示時のため)<BR>zoom_level：地図のズーム値(再表示時のため)<BR>pitch：地図の仰俯角度(再表示時のため)<BR>bearing：地図の回転角度(再表示時のため)|
 | 人流データ | /api/t_people_flow_data |指定した領域、日時、装置IDに該当するデータをGeoJsonで返却<BR>引数：<BR>point_1:領域の北西の経度緯度<BR>point_2:領域の北東の経度緯度<BR>point_3:領域の南東の経度緯度<BR>point_4:領域の南西の経度緯度<BR>currentDate:対象日付・時刻(YYYYMMDDHH24MISS *DD以下は省略可能)<BR>device:対象とする子機デバイスID|
 | 人流データの存在日付取得 | /api/t_people_exist_date | |
 | 地理院地図（バイナリベクタタイル） | /api/std/experimental_bvmap/{z}/{x}/{y} | |
@@ -180,8 +183,11 @@ MapboxをベースとしたWebGISアプリ向けデータ可視化機能を活�
 
 <!-- ############################################################################## -->
 ### 3.レイヤの描写
-- 地図ライブラリとして、mapbox-gl(v1)「https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.2/mapbox-gl.js」 を用いている。
+- 地図ライブラリとして、mapbox-gl(v1)「https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.3/mapbox-gl.js」 を用いている。
 - 点群データのレイヤ作成には、deck.gl「https://unpkg.com/deck.gl@^8.1.0/dist.min.js」 を用いている。
+
+利用しているjavascriptファイルは複数あり、index.jsを基本とし、必要な共通変数は定義して各jsファイルで参照している。
+
 ### <BR>
 
 ### レイヤを地図に表示するまでの流れ
@@ -190,7 +196,7 @@ MapboxをベースとしたWebGISアプリ向けデータ可視化機能を活�
 新たにレイヤを追加する場合は、レイヤの種類に該当する内容を記載する。<BR>
 下記に示す本処理用のレイヤ種類によって処理も分岐している。
 
-ファイル：Mapbox_map/js/layer_conf.js
+ファイル：[Mapbox_map/js/layer_conf.js]
 
   - 構成
     - キー：レイヤソースID
@@ -332,27 +338,274 @@ wgapp.map = new mapboxgl.Map({
 
 関数：layer_update
   - 引数：更新日時
-  - 同ファイル内の`readGeoJSON`関数を呼び出し、動的なgeojsonデータを更新
-  - 同ファイル内の`setLayerSource`関数を呼び出し、URLに日付を持つタイルのレイヤ更新
+
+  - 動的なgeojsonデータを更新：同ファイル内の`readGeoJSON`関数を呼び出して更新
+  - URLに日付を持つタイルのレイヤ更新：同ファイル内の`setLayerSource`関数を呼び出して更新
+  - 前処理レイヤ更新：preprocess_layer.jsファイルの`updatePreproJsonLayer`関数を呼び出し、前処理レイヤを該当する日時(※１)の時系列データに更新(※２)
+  - MF-JSONレイヤ更新：fileupload.jsファイルの`updateMfJsonLayer`関数を呼び出し、MF-JSONレイヤを該当する日時(※１)の時系列データに更新(※２)（
+  <BR>※１ 該当する日時とは、取得した時系列データが保持している時刻で、指定時刻を超えない一番近い日時
+  <BR>※２ 時系列データが保存されているレイヤを、フィルター機能を用いて該当する日時のデータのみを表示（APIによる再取得ではない）
+  ```
+  wgapp.map.setFilter(layer_id, ['==', 'datetime', closest_date]);
+  ```
+
 ### <BR>
 
 ### 3-4. 位置情報変更に伴う処理
 ファイル：Mapbox_map/js/index.js
+
 メソッド：wgapp.map.on('moveend')
 
-  同ファイル内の`readGeoJSON`関数を呼び出し、位置情報にも動的なgeojsonデータを更新
+  同ファイル内の`readGeoJSON`関数とpreprocess_layer.jsファイルの`updatePreproJsonLayer`関数を呼び出し、位置情報に動的なgeojsonデータを更新<BR>
+  位置情報変更で`updatePreproJsonLayer`関数があるのは、前処理ファイルを読み込み該当する位置に移動してから、ズームレベルによる大きさのレイヤを生成する必要があるため。（通常のズームレベル変更でも更新される）
   ```
   wgapp.map.on('moveend', () => {
     readGeoJSON();
+    updatePreproJsonLayer(formatDate(g_current_p, 'YYYYMMDDhhmm'), true)
   });
   ```
 ### <BR>
 
 
-### 3-5. 各処理詳細
-レイヤデータ更新処理などについては、別途readme[readme_mapbox_detail]を参照
+### 3-5. 時系列データの前処理データ
+対象となるデータテーブル、取得項目（カラム）によって異なる処理としている。
+
+### 3-5.1 データテーブルごとのAPI名の設定
+ファイル：Mapbox_map/js/index.js
+
+  アメダス　　：t_preprocessing_amedas_data
+
+  移動体データ：t_preprocessing_garbagetruck_data
+
+  データテーブルの識別子(キー)を`self_prepro_source_ids`で定義し、該当するAPIを`self_api_names`で設定している。
+  ```
+  const self_prepro_source_ids = ['layer_amedas', 'layer_garbagetruck'];
+  const self_api_names = {'layer_amedas':"t_preprocessing_amedas_data",'layer_garbagetruck':"t_preprocessing_garbagetruck_data"}; 
+  ```
+
+  APIは、「取得・表示」ボタンのメソッド `$('#btn_prepro_get_data').on('click', async function() `で呼び出している。
+  
+
 ### <BR>
 
+### 3-5.2 デフォルトスタイル
+
+他のレイヤ設定と同様
+
+- アメダスデータ
+ファイル：Mapbox_map/json/layer_amedas.json　・・・ラベルに関しては下記「3-5.6」参照
+
+- 移動体データ（ごみ収集車）
+ファイル：Mapbox_map/json/layer_garbagetruck.json　・・・L1が車体、L2が棒グラフ、L3が数値ラベルとなる。
+
+- 移動体データ軌跡（ごみ収集車）
+ファイル：Mapbox_map/json/layer_garbagetruck_trajectory.json　・・・L1が軌跡、L2が最終日の円、L3が数値ラベルとなる。
+
+  移動体の色は車体の取得順位（車体番号の昇順）によって振り分けている。（７つごとに繰り返す）
+
+
+### <BR>
+
+### 3-5.3 データテーブルごとの選択項目リストの設定
+UIに表示する取得項目(`col_name`)は、選択したレイヤ（データテーブル）によって動的に設定している。<BR>
+データベースで処理する際、`col_name`の`value`が取得するデータテーブルのカラム名になる。
+
+ファイル：Mapbox_map/js/index.js
+
+メソッド：  $('.data_select_box .ctrl_disabled').dblclick(function () {
+
+例）アメダスデータの場合
+  ```
+    if (source_id == self_prepro_source_ids[0] ){
+      // アメダス
+
+      // カラムリスト作成
+      $('#col_name').append($('<option value="precipitation24h">24時間降雨量</option>'));
+      $('#col_name').append($('<option value="temp">気温</option>'));
+      $('#col_name').append($('<option value="snow">積雪深</option>'));
+  ```
+
+### <BR>
+
+### 3-5.4 APIからのデータを日時単位に変換
+
+ファイル：Mapbox_map/js/moving_feature.js
+
+関数： generateSingleFeatureFromApiData
+
+　APIから取得した本システム固有形式のデータを、日時単位のGeoJson形式に変換する。<BR>
+　次に、下記関数(3-5.5)で、必要な地物情報を生成する。
+
+### <BR>
+
+### 3-5.5 地物の生成と格納
+
+ファイル：Mapbox_map/js/moving_feature.js
+
+関数： generateAmedasFeatures　　　・・・アメダスデータの場合 <BR>
+　　　generateMovingObjectFeatures ・・・移動体データの場合
+
+　下記のようにデータテーブルの取得項目ごとで分岐して、数値、地物情報などを含むgeojsonデータを生成し、変数に格納している。
+  ```
+  例）アメダスデータ
+  let data = {
+    "type": "FeatureCollection",
+    "features": []
+  };
+  <中略>
+
+  // カラムによる数値設定
+  if ("precipitation24h" in object.properties || "snow" in object.properties){
+    // ********************************************
+    // 24時間降雨量または積雪量
+    // ********************************************
+    <中略>
+
+  }else if ("temp" in object.properties){
+    // ********************************************
+    // 気温
+    // ********************************************
+    object.properties.index = i;
+    feature = object;
+    <中略>
+  }
+
+  // 各地物をFeaturesに格納
+  if(feature != null){
+    feature.id = i;
+    data.features.push(feature);
+  }
+
+  // ソースIDごとのgeojsonデータに格納
+  geojson_data[self_prepro_source_ids[0]] =  data;
+  ```
+
+### <BR>
+
+### 3-5.6 データテーブルの取得項目によるレイヤのテクスチャ（タイプ、色、高さなど）設定
+
+ファイル：Mapbox_map/js/moving_feature.js
+
+関数：setAmedasLayerPaint(アメダスデータの場合)
+
+　例）アメダスデータの「気温」
+  ```
+    if(col_name == "temp"){
+      // 気温
+      layerDef["type"] = "circle";
+      layerDef["paint"] =  {
+        "circle-radius": 10,
+        "circle-color":
+          ["step",
+              ["get", col_name], // カラム名のまま定義
+              "#002080",-5,
+              "#0041FF",0,
+              "#0096FF",5,
+                "#B9EBFF",10,
+                "#797B7D",15,
+                "#FFFF96",20,
+                "#FFF500",25,
+                "#FF9900",30,
+                "#FF2800",35,
+                "#6C0068"
+        ],
+      }
+  ```
+
+### <BR>
+
+### 3-5.7 データテーブルの取得項目による凡例の設定
+
+ファイル：Mapbox_map/js/index.js
+
+関数：updateLegend
+
+- 凡例のヘッダー内容とスタイル(高さを調整したもの）は分岐している。
+  ```
+    if(col_name.indexOf("wind") >= 0){
+      // 風速
+      $legend += '<div class="amedas_legend_short">';
+      $legend += '<span>m/s</span>';
+    }else if(col_name.indexOf("snow") >= 0){
+      // 積雪深
+      $legend += '<div class="amedas_legend">';
+      $legend += '<span>cm</span>';
+    }else {
+      // 雨量
+      $legend += '<div class="amedas_legend">';
+      $legend += '<span>mm</span>';
+    }
+  ```
+
+- 色と数値については、下記のようにレイヤ情報を取得して動的に生成しているので、ここで再度記載する必要はない。
+  ```
+      // 設定済みのレイヤ情報から凡例情報を取得
+      $legend += '<div><span style="background-color: ' + _colors[_length-1] + ';"></span></div>';
+      for(let i=_length-3; i>=2; i=i-2){ // i=0,1は別
+        $legend += '<div><span style="background-color: ' + _colors[i] + ';"></span>' + _colors[i+1] + '</div>';
+      }
+  ```
+
+### <BR>
+
+### 3-6. MF-JSONのデータ
+
+### 3-6-1. 読み込みとGeojson生成
+
+ファイル：Mapbox_map/js/fileupload.js
+
+関数：fileselectMF
+
+- 1.画面から選択したMF-JSONファイルを読み込む。
+
+- 2.下記のようにデータを解析して取得
+  - MF-JSON形式：取得したMF-JSONの最初のキーに`temporalGeometry`がある場合
+    - `temporalGeometry`の中で、位置情報を`coordinates`から、日時を`datetimes`から取得（日時は昇順であり、位置情報は日時の順番と一致している前提）
+    - `temporalProperties`の各配列内の、`values`から数値を取得。（日時の順番と一致している前提）
+
+  - Gejson形式：上記以外
+    - 日時を`properties`の`datetimes`から取得
+    - 各データは`properties`の各キーの値から取得（日時の順番と一致している前提）
+
+- 3.取得したデータを、Gejson形式で一時保存する
+  - レイヤのフィルター機能を用いて該当する日時を表示するため、地物の`properties`に`datetimes`として日時を追加
+
+
+### 3-6-2. レイヤ生成とフィルター
+
+ファイル：Mapbox_map/js/fileupload.js
+
+関数：updateMfJsonLayer
+
+- 初回ファイル読み込み後および日時変更時、下記のようにレイヤのフィルター機能を用いて、該当する日時のみのデータを表示する。
+
+  ```
+  wgapp.map.setFilter(layer_id, ['==', 'datetime', closest_date]);
+  ```
+
+### <BR>
+
+### 3-7. Geojsonアップロード時のスタイル
+
+ファイル：Mapbox_map/js/fileupload.js
+
+関数：fileselect
+
+レイヤのスタイルを該当する項目によって設定する。
+
+例） 立体的（PLATEAUなど）の場合
+
+  ```
+  if (div_name == 'upload_5' && 'height' in feature.properties){
+    // 立体的（PLATEAUなど）
+    layer_type = 'fill-extrusion';
+    _paint = {
+      'fill-extrusion-color': "#008000",
+      'fill-extrusion-height': ['get', 'height'],
+    }
+  ```
+
+### <BR>
 
 <!-- ############################################################################## -->
 ### 4.時間（日時）表示と同期
