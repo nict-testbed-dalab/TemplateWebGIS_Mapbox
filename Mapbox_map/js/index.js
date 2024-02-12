@@ -22,10 +22,12 @@ let mf_json_closest_date = null; // 表示している一番近い時刻
 // 前処理の定義と一時保存変数
 const API_URL = "https://tb-gis-web.jgn-x.jp/api"
 //const API_URL = "http://localhost:5000"
-const self_prepro_source_ids = ['layer_amedas', 'layer_garbagetruck', 'layer_garbagetruck_trajectory'];
-const self_api_names = {'layer_amedas':"t_preprocessing_amedas_data",'layer_garbagetruck':"t_preprocessing_garbagetruck_data",'layer_garbagetruck_trajectory':"t_preprocessing_garbagetruck_data"};  // API名
-let prepro_response_geojsons = {'layer_amedas':{}, 'layer_garbagetruck':{}};     // 前処理の時刻ごとのgeojson
-let prepro_date_int_list =  {'layer_amedas':[], 'layer_garbagetruck':[]};         // 前処理の時刻キー
+
+const self_prepro_source_ids = ['layer_amedas', 'layer_garbagetruck', 'layer_garbagetruck_trajectory','layer_bus'];
+const self_api_names = {'layer_amedas':"t_preprocessing_amedas_data",'layer_garbagetruck':"t_preprocessing_garbagetruck_data",'layer_garbagetruck_trajectory':"t_preprocessing_garbagetruck_data","layer_bus":"t_bus_location_data"};  // API名
+let prepro_response_geojsons = {'layer_amedas':{}, 'layer_garbagetruck':{},'layer_bus':{}};     // 前処理の時刻ごとのgeojson
+let prepro_date_int_list =  {'layer_amedas':[], 'layer_garbagetruck':[],'layer_bus':[]};         // 前処理の時刻キー
+
 
 // 選択時刻
 let g_current_p = Date.now();
@@ -170,7 +172,6 @@ async function readGeoJSON(){
 
   let selected_yyyymmdd = formatDate(g_current_p, 'YYYYMMDD');
   let selected_hhmi = formatDate(g_current_p, 'hhmm');
-
   bound = wgapp.map.getBounds();
   point_1 = bound["_ne"]["lng"] + "," + bound["_ne"]["lat"];
   point_2 = bound["_ne"]["lng"] + "," + bound["_sw"]["lat"];
@@ -233,6 +234,7 @@ async function readGeoJSON(){
       return null;
     }
   }
+
 
   // *****************************************************************
   // アメダスデータ
@@ -660,7 +662,7 @@ wgapp.map.on('idle', () => {
               }
             }
 
-            if (source_id == self_prepro_source_ids[0] || source_id == self_prepro_source_ids[1] || source_id == self_prepro_source_ids[2]){
+            if (source_id == self_prepro_source_ids[0] || source_id == self_prepro_source_ids[1] || source_id == self_prepro_source_ids[2] || source_id == self_prepro_source_ids[3]){
               // 前処理データ関連の場合
               $("#prepro_controller").removeClass("hidden");
               // $('#view_type').children().remove(); // いったんすべて削除
@@ -703,8 +705,9 @@ wgapp.map.on('idle', () => {
                   $('#col_name').append($('<option value="pm25">PM2.5</option>'));
 
                   // 移動体のいずれかのデータがなければ移動する
-                  if (geojson_data[self_prepro_source_ids[1]] == undefined && geojson_data[self_prepro_source_ids[2]] == undefined){
-                    wgapp.map.flyTo({
+                  //if (geojson_data[self_prepro_source_ids[1]] == undefined && geojson_data[self_prepro_source_ids[2]] == undefined && geojson_data[self_prepro_source_ids[3]] == undefined){
+                  if (source_id == self_prepro_source_ids[1] || source_id == self_prepro_source_ids[2]) {  
+		    wgapp.map.flyTo({
                       center: [137.07078, 35.131889],
                     });
                   }
@@ -767,7 +770,7 @@ wgapp.map.on('idle', () => {
 
 	      }
 
-        if (source_id == self_prepro_source_ids[0] || source_id == self_prepro_source_ids[1] || source_id == self_prepro_source_ids[2]){
+        if (source_id == self_prepro_source_ids[0] || source_id == self_prepro_source_ids[1] || source_id == self_prepro_source_ids[2]   || source_id == self_prepro_source_ids[3]){
           // 前処理データ関連の場合
           // 非表示
           $("#prepro_controller").addClass("hidden");
@@ -858,7 +861,7 @@ function layer_update(fileName, current_p) {
     }
 
     // アメダスデータ or 移動体データ
-    if (selectedLayerIds.includes(self_prepro_source_ids[0]) || selectedLayerIds.includes(self_prepro_source_ids[1]) || selectedLayerIds.includes(self_prepro_source_ids[2])) {
+    if (selectedLayerIds.includes(self_prepro_source_ids[0]) || selectedLayerIds.includes(self_prepro_source_ids[1]) || selectedLayerIds.includes(self_prepro_source_ids[2]) || selectedLayerIds.includes(self_prepro_source_ids[3])) {
       if ($("#start_date").val() == ""){
 
         // 初期（開始日時、終了日時を設定）

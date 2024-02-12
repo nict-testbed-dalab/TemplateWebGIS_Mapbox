@@ -417,6 +417,7 @@ function updatePreproJsonLayer(dateTimeNum, is_new){
     // ***********************************
     // 対象日時から最も近い（超えない）日時を取得
     // ***********************************
+    console.log(prepro_date_int_list[source_id]);
     closest_date = fncNearestDateStmp(Number(dateTimeNum), prepro_date_int_list[source_id]);
     console.log("closest_date", closest_date)
     if (closest_date === undefined){
@@ -588,6 +589,14 @@ function setPreproGeojsonLayerSource (layer_id, source_id) {
 
         // L2 テキストレイヤ（観測所）
         setAmedasTextLayer();
+
+      }else if (source_id == self_prepro_source_ids[3]) {
+        // L1 再追加
+        if (wgapp.map.getLayer(before_layerid)) {
+          wgapp.map.addLayer(layerDef, before_layerid);
+        }else{
+          wgapp.map.addLayer(layerDef);
+        }
 
       }else{
         // L1 再追加
